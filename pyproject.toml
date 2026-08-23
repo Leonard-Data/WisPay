@@ -1,0 +1,74 @@
+[project]
+name = "wispay"
+version = "0.1.0"
+description = "WisPay - internal portal for Vendor and Employee Payment Requests (Reflex)."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "azure-ai-documentintelligence>=1.0.2",
+    "pydantic>=2.13.4",
+    "reflex>=0.9.8.post1",
+]
+
+# Development tooling. Install with:  uv sync --group dev
+[dependency-groups]
+dev = [
+    "ruff>=0.9",
+    "mypy>=1.13",
+    "pytest>=8.3",
+    "pre-commit>=4.0",
+]
+
+# --------------------------------------------------------------------------- #
+# Ruff - lint + format (replaces black/isort/flake8)
+# --------------------------------------------------------------------------- #
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (import sorting)
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "C4",   # flake8-comprehensions
+    "TCH",  # flake8-type-checking
+]
+ignore = [
+    "E501",  # line length handled by the formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["WisPay", "rxconfig"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# --------------------------------------------------------------------------- #
+# Mypy - static type checking
+# --------------------------------------------------------------------------- #
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+# Reflex is importable but its component constructors (rx.container, rx.vstack, ...)
+# return Any, so warn_return_any would fire on every page component. Disabled as a
+# deliberate, documented concession; all other strict checks remain in force.
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["reflex.*", "rxconfig"]
+ignore_missing_imports = true
+
+# --------------------------------------------------------------------------- #
+# Pytest
+# --------------------------------------------------------------------------- #
+[tool.pytest.ini_options]
+minversion = "8.3"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"

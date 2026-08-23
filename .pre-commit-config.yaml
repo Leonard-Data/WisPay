@@ -1,0 +1,44 @@
+# Pre-commit hooks for WisPay.
+# One-time setup:  uv sync --group dev && uv run pre-commit install --install-hooks
+# Run all hooks:   uv run pre-commit run --all-files
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=500]
+
+  # Lint + format on commit, using the project's pinned ruff (single source of truth).
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format .
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix .
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # Full gate (mypy + pytest, plus a ruff re-check) before push.
+  - repo: local
+    hooks:
+      - id: wispay-validate
+        name: wispay validate (mypy + pytest)
+        entry: bash scripts/validate.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
