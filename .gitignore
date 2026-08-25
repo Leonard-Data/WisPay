@@ -10,6 +10,10 @@ __pycache__/
 build/
 dist/
 wheels/
+# Playwright artifacts
+test-results/
+playwright-report/
+.playwright-cli/
 *.egg-info
 
 # Virtual environments

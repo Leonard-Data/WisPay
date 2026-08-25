@@ -1,17 +1,19 @@
 # WisPay — application repo
 
 WisPay is the internal portal for **Vendor and Employee Payment Requests**: submission through approval and Finance's recording of external payment completion.
-This repo holds the working **Reflex** application. It is **not** the source of truth for domain or design.
+This repo holds the working **Reflex** application. WisPay-doc remains the source of truth for domain, architecture, and product decisions; this repo's `DESIGN.md` is the checked-in visual implementation contract for the app.
 
 ## Source of truth
 
-The canonical domain glossary, delivery plan, design system, and ADRs live in the **WisPay-doc** repo (`E:/projects/WisPay-doc`). Read these **before** writing feature code:
+The canonical domain glossary, delivery plan, product documentation, and ADRs live in the sibling **WisPay-doc** repo (`../WisPay-doc`; currently `C:\Users\binh.phung\projects\WisPay-doc`). Read these **before** writing feature code:
 
 - `CONTEXT.md` — canonical domain glossary and invariants (actors, request categories, lifecycle, security invariants). Do not invent conflicting terminology.
 - `wispay-delivery-plan.md` — phased delivery plan and release gates.
-- `docs/product/DESIGN.md` — design system for this Reflex app.
+- `docs/product/DESIGN.md` — product-level design intent and context.
 - `docs/product/APP-SETUP.md` — scaffold guide, DB schema, Azure Document Intelligence integration.
 - `docs/adr/` — architecture decision records. Surface conflicts; don't silently override.
+
+The app's visual implementation contract is the checked-in [`DESIGN.md`](DESIGN.md), synchronized from `C:\Users\binh.phung\projects\WisPay-Design-System\DESIGN.md`. Use [`assets/design-tokens.css`](assets/design-tokens.css) for source-derived visual tokens. Domain terminology, workflow invariants, security rules, and architecture remain governed by WisPay-doc.
 
 Two-repo boundary:
 
@@ -39,6 +41,8 @@ Copy `.env.example` to `.env` and fill Azure credentials before running anything
 
 ## How we work — read first
 
+- [`DESIGN.md`](DESIGN.md) — mandatory visual and interaction contract for any UI work.
+- [`assets/design-tokens.css`](assets/design-tokens.css) — source-derived tokens; do not add ad-hoc design values.
 - [`CONVENTIONS.md`](CONVENTIONS.md) — coding rules (style, Reflex patterns, Pydantic, security/audit invariants, testing).
 - [`scripts/validate.sh`](scripts/validate.sh) — the pre-validation gate (lint + format + types + tests). **Must pass before any commit/push.**
 - [`.pre-commit-config.yaml`](.pre-commit-config.yaml) — git hooks (ruff on commit, full gate on push).
@@ -54,6 +58,29 @@ Non-negotiable for any payment-related change:
 4. Every submission, review, approval, rejection, change, delegation, and payment update is audit logged.
 5. Submitted financial records and audit events are never hard-deleted.
 6. Secrets (Azure keys, SQL passwords) live in `.env` only — never in code or commits.
+
+## Domain model source rules
+
+For every change under `WisPay/models/`:
+
+1. Read `../WisPay-doc/CONTEXT.md`, `docs/reference/backend/data-model.md`, `docs/reference/backend/lifecycle-state-machine.md`, ADR-0004, and ADR-0006 before coding. Read the service-layer and authz references when those boundaries are affected.
+2. Follow the authoritative [Pydantic model rules](CONVENTIONS.md#pydantic-models): typed Pydantic v2 models, frozen-by-default updates, `Money` for every monetary value, and pure-domain imports only.
+3. Keep authorization, lifecycle guards, audit writing, persistence, Azure calls, and other side effects in services or infrastructure rather than domain models.
+4. Update `tests/models/`, run `uv run pytest tests/models`, then run `bash scripts/validate.sh`. Surface canonical-doc conflicts instead of inventing a local rule.
+
+## UI and component source rules
+
+For every new or changed UI component, page, layout, or interaction:
+
+1. Read `DESIGN.md` before coding and use its source-backed tokens, spacing, typography, layout, accessibility, content, and responsive rules.
+2. Fetch `https://buridan-ui.reflex.run/llms.txt` before selecting or implementing the component. Follow the current Buridan UI Reflex guidance and link the relevant component documentation in the work notes or PR description.
+3. Reuse the closest source example or UI-kit pattern from `C:\Users\binh.phung\projects\WisPay-Design-System` where one exists; do not invent a parallel component API or visual pattern.
+4. If Buridan UI is unavailable, its guidance conflicts with `DESIGN.md`, or the local design-system source is unavailable, stop and surface the conflict or outage. Do not silently substitute generic components.
+5. Preserve WisPay domain language and invariants: UI must distinguish recording an external payment from initiating money movement, and it must not hide permission or separation-of-duties explanations.
+6. Treat `DESIGN.md` and `assets/design-tokens.css` as synchronized snapshots. Update both when the source package changes, and record the source path and retrieval date in the change description.
+7. Put reusable Reflex visual values and motion names in [`WisPay/styles.py`](WisPay/styles.py); pages and components should refer to that module instead of duplicating style dictionaries or animation strings.
+
+The Buridan endpoint is a component/API reference, not a replacement for WisPay's visual design system or domain/architecture sources.
 
 ## Validation
 
@@ -124,3 +151,46 @@ Then proceed with the user's request.
 
 When you need to compile, run, reload, or debug a Reflex application, follow the **reflex-process-management** skill for the correct sequence and error investigation steps.
 <!-- reflex managed end -->
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues for this repo are tracked as local markdown under `.scratch/<feature-slug>/` (one file per ticket under `issues/`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical triage labels used as-is: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. The canonical `CONTEXT.md` and `docs/adr/` live in the sibling WisPay-doc repo (`../WisPay-doc`), not in this repo. See `docs/agents/domain.md`.
+
+---
+
+## UI validation with Playwright
+
+When adding or changing a screen under `WisPay/pages/` or a reusable component under `WisPay/components/`:
+
+1. Start Reflex with explicit local ports: `uv run reflex run --frontend-port 3000 --backend-port 8000 --backend-host 127.0.0.1`.
+2. Run the browser smoke suite: `uv run pytest -m e2e`.
+3. Use the project `playwright-cli` skill with the configured Playwright MCP in `.mcp.json` (or the available browser MCP) to inspect each impacted route at desktop `1440x900` and mobile `390x844`. Capture an accessibility snapshot, screenshot, console errors, network failures, and the primary user flow. Use `playwright-cli show --annotate` when the user needs to mark up the live UI.
+4. Compare the result with `E:/projects/WisPay-doc/docs/product/DESIGN.md`. If that canonical repo is unavailable, state the gap and use the design tokens documented in the source file; do not invent a conflicting system.
+5. Fix findings and repeat the browser review for at most three iterations. If the UI still misses the design system, stop and ask the user which trade-off or visual direction to choose rather than looping indefinitely.
+6. User validation is required before declaring the UI complete: present the rendered route and screenshots, ask the user to approve or request changes, and record any requested follow-up.
+
+Do not treat a passing automated test as design approval. The automated suite checks behavior and basic responsive rendering; the MCP review and explicit user validation are separate gates.
+
+### Required UI-test behavior
+
+When changing `WisPay/pages/`, `WisPay/components/`, `WisPay/layout/`, or their styles:
+
+- Do not only write a test script. Actually start or reuse the Reflex server, open a browser, and run the review before reporting completion.
+- Use the DevTools MCP for the live review. The browser must visibly open the app; capture the accessibility snapshot, screenshot, console output, and network failures for every impacted route.
+- Always check desktop `1440x900` and mobile `390x844`, plus an unknown route when error-page or routing behavior is affected.
+- Compare the rendered result against `docs/product/DESIGN.md` and fix visual or responsive findings before delivery.
+- Leave the browser open after the review so the user can inspect the rendered route. Show the screenshot paths and ask the user to approve the UI or request changes.
+- Passing `pytest`, compilation, or linting alone is not evidence that the UI review was completed.
+

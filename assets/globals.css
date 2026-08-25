@@ -192,3 +192,47 @@
     --sidebar-border: var(--gray-6);
     --sidebar-ring: var(--red-8);
 }
+
+/* WisPay motion primitives referenced by WisPay/styles.py. */
+@keyframes wispay-page-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes wispay-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes wispay-shimmer {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wispay-page,
+    .wispay-toast,
+    .wispay-skeleton {
+        animation: none !important;
+        transition: none !important;
+    }
+}

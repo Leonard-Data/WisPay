@@ -32,6 +32,13 @@ repos:
         types: [python]
         pass_filenames: false
         stages: [pre-commit]
+      - id: wispay-models-conformance
+        name: WisPay model conformance
+        entry: uv run pytest tests/models -q
+        language: system
+        files: ^(WisPay/models/|tests/models/)
+        pass_filenames: false
+        stages: [pre-commit]
 
   # Full gate (mypy + pytest, plus a ruff re-check) before push.
   - repo: local

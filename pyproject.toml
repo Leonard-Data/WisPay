@@ -17,6 +17,7 @@ dev = [
     "mypy>=1.13",
     "pytest>=8.3",
     "pre-commit>=4.0",
+    "playwright>=1.62.0",
 ]
 
 # --------------------------------------------------------------------------- #
@@ -45,6 +46,12 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party = ["WisPay", "rxconfig"]
 
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "WisPay.models._base.WisPayBaseModel",
+]
+
 [tool.ruff.format]
 docstring-code-format = true
 
@@ -71,4 +78,8 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "8.3"
 testpaths = ["tests"]
-addopts = "-ra --strict-markers"
+pythonpath = ["."]
+addopts = "-ra --strict-markers -m 'not e2e'"
+markers = [
+    "e2e: browser-based end-to-end tests (requires a running Reflex app)",
+]

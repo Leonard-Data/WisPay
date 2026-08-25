@@ -1,0 +1,34 @@
+[Reflex Frontend Exception]
+ TypeError: Cannot read properties of null (reading 'is_collapsed_rx_state_')
+TypeError: Cannot read properties of null (reading 'is_collapsed_rx_state_')
+    at 
+http://127.0.0.1:3000/app_components/WisPay/pages/dashboard.jsx?t=1787661647415
+:402:75
+    at Object.react_stack_bottom_frame 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:1
+2868:12)
+    at renderWithHooks 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:4
+213:19)
+    at updateFunctionComponent 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:5
+569:16)
+    at updateSimpleMemoComponent 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:5
+432:11)
+    at beginWork 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:6
+211:21)
+    at runWithFiberInDEV 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:8
+51:66)
+    at performUnitOfWork 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:8
+429:92)
+    at workLoopSync 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:8
+325:37)
+    at renderRootSync 
+(http://127.0.0.1:3000/node_modules/.vite/deps/react-dom_client.js?v=e6ddd9be:8
+309:6)
+

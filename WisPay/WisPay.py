@@ -1,36 +1,13 @@
-"""Welcome to Reflex! This file outlines the steps to create a basic app."""
+"""WisPay Reflex application entry point."""
 
 import reflex as rx
 
-from rxconfig import config
+from WisPay.routers import register_routes
 
 
 class State(rx.State):
-    """The app state."""
+    """Root application state; feature-specific state lives in substates."""
 
 
-def index() -> rx.Component:
-    # Welcome Page (Index)
-    return rx.container(
-        rx.color_mode.button(position="top-right"),
-        rx.vstack(
-            rx.heading("Welcome to Reflex!", size="9"),
-            rx.text(
-                "Get started by editing ",
-                rx.code(f"{config.app_name}/{config.app_name}.py"),
-                size="5",
-            ),
-            rx.link(
-                rx.button("Check out our docs!"),
-                href="https://reflex.dev/docs/getting-started/introduction/",
-                is_external=True,
-            ),
-            spacing="5",
-            justify="center",
-            min_height="85vh",
-        ),
-    )
-
-
-app = rx.App()
-app.add_page(index)
+app = rx.App(stylesheets=["design-tokens.css", "layout.css", "globals.css"])
+register_routes(app)

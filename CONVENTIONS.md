@@ -24,7 +24,7 @@ Authoritative for all code in this repo. Domain terms and security invariants co
 WisPay/                 # application package (app_name = "WisPay")
   __init__.py
   WisPay.py             # app entrypoint (rx.App, page registration)
-  state/                # rx.State subclasses (one concern per file)
+  states/                # rx.State subclasses (one concern per file)
   models/               # Pydantic domain models (mirror CONTEXT.md terms)
   components/           # reusable rx components
   pages/                # page components
@@ -47,9 +47,19 @@ Keep business logic **out** of components and pages — put it in `services/` so
 
 ## Pydantic models
 
-- Domain models mirror terminology in `WisPay-doc/CONTEXT.md` exactly (Payment Request, Beneficiary, Approval Route, Payment Record, etc.).
-- Validate at boundaries; models are the contract between layers.
-- Use `ConfigDict(frozen=True)` for value objects that must not mutate.
+Before changing `WisPay/models/`, read the sibling `../WisPay-doc/CONTEXT.md`, canonical backend data model and lifecycle state machine, and ADR-0004/ADR-0006.
+
+- Domain records and value objects subclass `WisPayBaseModel` (Pydantic v2). Use typed fields; do not substitute dataclasses, `TypedDict`, untyped dictionaries, or `Any` for domain models.
+- Models are frozen and reject extra fields by default. Services produce a new validated model for a change and Reflex State replaces the whole value; domain records are not mutated in place.
+- `models/` is pure domain code. It may import the standard library and Pydantic, but not Reflex, ORM/SQL drivers, Azure SDKs, environment configuration, repositories, or I/O clients.
+- Models enforce structural invariants and pure calculations. Services own authorization, lifecycle guards, idempotency, audit emission, persistence, and side effects.
+- Every monetary field uses `Money`, which stores `Decimal` amount, ISO currency code, and decimal scale. Floating-point amounts are prohibited; VND uses scale 0.
+- Submitted records retain typed display snapshots for external user, beneficiary, bank, organization, and accounting references.
+- Lifecycle code exposes exactly the 14 canonical states; `Overdue` is derived. Workflow instances and approval steps retain frozen rule versions, generation inputs, assignments, delegations, decisions, and timestamps.
+- `AuditEvent` carries previous/event hash fields and reason metadata. `AuditService` owns canonical serialization, hash computation, verification, and transactional append behavior.
+- Closed vocabularies use canonical `StrEnum` values. Administrator-configurable values such as payment methods remain validated strings or configuration references rather than hard-coded enums.
+- Service commands, results, typed errors, and runtime user context live with the service layer unless a later ADR makes them canonical domain records.
+- Export every canonical logical record through `WisPay.models.CANONICAL_RECORD_TYPES`. Model changes include mirrored `tests/models/` coverage and must pass the conformance test.
 
 ## Security & audit (mandatory)
 
