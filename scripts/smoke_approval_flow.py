@@ -22,9 +22,9 @@ from uuid import uuid4
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv()  # noqa: E402 - env must load before WisPay reads AZURE_SQL_*
 
-from WisPay.models import (
+from WisPay.models import (  # noqa: E402
     AccountingDimension,
     BeneficiaryReference,
     LifecycleState,
@@ -36,18 +36,18 @@ from WisPay.models import (
     VendorPaymentDetails,
     WorkflowOutcome,
 )
-from WisPay.models.enums import (
+from WisPay.models.enums import (  # noqa: E402
     AccessClassification,
     AuditAction,
     BeneficiaryType,
     BudgetResult,
     OpexCapexClassification,
 )
-from WisPay.services import approval_workflow
-from WisPay.services.db import connect, ensure_schema
-from WisPay.services.reference_data import RETENTION_POLICY_ID_PROTOTYPE
-from WisPay.services.sql_repositories import DurableAuditTrail, sql_stores
-from WisPay.services.workflow_rules import SEED_RULE_VERSION
+from WisPay.services import approval_workflow  # noqa: E402
+from WisPay.services.db import connect, ensure_schema  # noqa: E402
+from WisPay.services.reference_data import RETENTION_POLICY_ID_PROTOTYPE  # noqa: E402
+from WisPay.services.sql_repositories import DurableAuditTrail, sql_stores  # noqa: E402
+from WisPay.services.workflow_rules import SEED_RULE_VERSION  # noqa: E402
 
 NOW = datetime.now(UTC)
 
