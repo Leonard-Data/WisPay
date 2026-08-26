@@ -56,38 +56,42 @@ def test_shell_sidebar_is_responsive_and_interactive(
     assert response.ok, f"Frontend returned HTTP {response.status}"
 
     sidebar = page.locator(".wispay-sidebar")
-    main_frame = page.locator(".wispay-main-frame")
     nav_labels = page.locator(".wispay-nav-item-label")
+    main_frame = page.locator(".wispay-main-frame")
 
-    for width, height in ((1440, 900), (1280, 900), (1024, 900), (768, 1024), (390, 844), (375, 812)):
+    for width, height in (
+        (1440, 900),
+        (1280, 900),
+        (1024, 900),
+        (768, 1024),
+        (390, 844),
+        (375, 812),
+    ):
         page.set_viewport_size({"width": width, "height": height})
         assert page.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth")
 
         if width > 1024:
             assert sidebar.bounding_box() is not None
             assert round(sidebar.bounding_box()["width"]) == 264
-            assert page.evaluate(
-                "() => getComputedStyle(document.querySelector('.wispay-main-frame')).marginLeft"
-            ) == "264px"
+            expect(main_frame).to_have_css("margin-left", "264px")
             expect(page.locator(".wispay-mobile-menu")).to_be_hidden()
         else:
             expect(page.locator(".wispay-mobile-menu")).to_be_visible()
-            assert page.evaluate(
-                "() => getComputedStyle(document.querySelector('.wispay-main-frame')).marginLeft"
-            ) == "0px"
-            assert page.evaluate(
-                "() => getComputedStyle(document.querySelector('.wispay-navbar')).position"
-            ) == "fixed"
+            expect(main_frame).to_have_css("margin-left", "0px")
+            assert (
+                page.evaluate(
+                    "() => getComputedStyle(document.querySelector('.wispay-navbar')).position"
+                )
+                == "fixed"
+            )
 
     page.set_viewport_size({"width": 1440, "height": 900})
     page.get_by_role("button", name="Toggle sidebar").click()
     expect(sidebar).to_have_class(re.compile(r"is-collapsed"))
     expect(nav_labels.first).to_be_hidden()
     assert page.locator('.wispay-nav-item[title="Requests"]').count() == 1
-    assert round(sidebar.bounding_box()["width"]) == 72
-    assert page.evaluate(
-        "() => getComputedStyle(document.querySelector('.wispay-main-frame')).marginLeft"
-    ) == "72px"
+    expect(sidebar).to_have_css("width", "72px")
+    expect(main_frame).to_have_css("margin-left", "72px")
 
     page.get_by_role("button", name="Toggle sidebar").click()
     expect(nav_labels.first).to_be_visible()
@@ -101,7 +105,7 @@ def test_shell_sidebar_is_responsive_and_interactive(
     expect(page.get_by_role("button", name="Close navigation")).to_be_visible()
     expect(page.locator(".wispay-sidebar")).to_have_class(re.compile(r"is-open"))
     expect(page.locator(".wispay-backdrop")).to_have_class(re.compile(r"is-visible"))
-    page.get_by_role("button", name="Close navigation").click()
+    page.locator(".wispay-backdrop").click(position={"x": 340, "y": 422})
     expect(page.get_by_role("button", name="Open navigation")).to_be_visible()
     expect(page.locator(".wispay-backdrop")).not_to_have_class(re.compile(r"is-visible"))
 
