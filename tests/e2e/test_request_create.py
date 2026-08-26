@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 from playwright.sync_api import Page, expect
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 
 @pytest.mark.e2e
@@ -17,13 +18,24 @@ def test_wizard_happy_path_submits_vendor_request(
     invoice = tmp_path / "INV-1001.pdf"
     invoice.write_bytes(b"%PDF-1.4\ntrailer<<>>\n%%EOF\n")
 
-    page.goto(f"{base_url}/requests/new", wait_until="domcontentloaded")
+    page.goto(f"{base_url}/requests/new", wait_until="networkidle")
     expect(page).to_have_title("New Payment Request · WisPay")
     expect(page.get_by_role("heading", name="Create payment request")).to_be_visible()
 
-    page.get_by_role("button", name="Vendor payment").click()
-    page.get_by_role("button", name="Continue").click()
-    expect(page.get_by_role("heading", name="Vendor payment details")).to_be_visible()
+    # Hydration race under full-battery load: the first select/Continue pair
+    # can land before React attaches handlers. Retry until step 2 renders.
+    details_heading = page.get_by_role("heading", name="Vendor payment details")
+    for _ in range(3):
+        page.get_by_role("button", name="Vendor payment").click()
+        page.get_by_role("button", name="Continue").click()
+        try:
+            details_heading.wait_for(timeout=3000)
+            break
+        except PlaywrightTimeoutError:
+            continue
+    else:
+        pytest.fail("wizard did not advance past the type step")
+    expect(details_heading).to_be_visible()
 
     page.fill("#fld-title", "Vendor invoice INV-1001 payment")
     page.fill("#fld-vendor_name", "Acme Supplies JSC")

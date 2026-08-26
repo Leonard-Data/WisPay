@@ -22,9 +22,9 @@ Path-parameter seam (verified against the dynamic-routing docs;
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
-from typing import TYPE_CHECKING
 
 import reflex as rx
+from reflex.event import EventSpec  # noqa: TC002 - Reflex resolves handler hints at runtime
 
 from states.request_create import RequestCreateState
 from WisPay.models import LifecycleState
@@ -38,9 +38,6 @@ from WisPay.services.request_query import (
     is_overdue,
     queue_rows,
 )
-
-if TYPE_CHECKING:
-    from reflex.event import EventSpec
 
 _TONE_BY_STATE: dict[LifecycleState, str] = {
     LifecycleState.DRAFT: "neutral",
