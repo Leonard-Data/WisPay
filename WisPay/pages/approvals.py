@@ -138,7 +138,7 @@ def _queue_table() -> rx.Component:
                         )
                     ),
                     rx.el.tbody(
-                        rx.foreach(approvals_state.queue_rows, _queue_row),  # type: ignore[misc,attr-defined]
+                        rx.foreach(approvals_state.queue_rows, _queue_row),
                     ),
                 ),
                 class_name="wispay-appr-table-wrap",
