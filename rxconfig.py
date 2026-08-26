@@ -1,8 +1,30 @@
+import os
+
 import reflex as rx
+from dotenv import load_dotenv
 from reflex.plugins.shared_tailwind import TailwindConfig
+
+load_dotenv()
+
+required = {
+    "AZURE_SQL_SERVER": os.getenv("AZURE_SQL_SERVER"),
+    "AZURE_SQL_DATABASE": os.getenv("AZURE_SQL_DATABASE"),
+    "AZURE_SQL_USERNAME": os.getenv("AZURE_SQL_USERNAME"),
+    "AZURE_SQL_PASSWORD": os.getenv("AZURE_SQL_PASSWORD"),
+}
+# Construct the Azure SQL Server connection string
+# Encrypt=yes and TrustServerCertificate=no are required by Azure SQL
+connection_string = (
+    f"mssql+pyodbc://{required['AZURE_SQL_USERNAME']}:{required['AZURE_SQL_PASSWORD']}@{required['AZURE_SQL_SERVER']}.database.windows.net/{required['AZURE_SQL_DATABASE']}"
+    "?driver=ODBC+Driver+18+for+SQL+Server"
+    "&Encrypt=yes"
+    "&TrustServerCertificate=no"
+    "&Connection+Timeout=30"
+)
 
 config = rx.Config(
     app_name="WisPay",
+    db_url=connection_string,
     show_built_with_reflex=False,
     plugins=[
         rx.plugins.RadixThemesPlugin(
