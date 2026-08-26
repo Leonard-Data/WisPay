@@ -11,6 +11,7 @@ sequences calls and translates typed outcomes into renderable state
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -219,8 +220,17 @@ class AuthState(rx.State):
 
     @rx.event
     def guard(self) -> EventSpec | None:
-        """Page-load gate: validate the session or send the visitor to login."""
+        """Page-load gate: validate the session or send the visitor to login.
 
+        ``WISPAY_E2E_AUTH_BYPASS=1`` skips the gate so browser suites can
+        exercise guarded routes headlessly (no interactive Entra flow in
+        CI). The variable is set only by the e2e harness; never enable it
+        for deployments. Tracked on the auth-entra wayfinder map (#3).
+        """
+
+        if os.getenv("WISPAY_E2E_AUTH_BYPASS") == "1":
+            self._session_valid = True
+            return None
         token = self.session_token
         if not token:
             self._reset_profile()

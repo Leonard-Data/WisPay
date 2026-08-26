@@ -12,6 +12,7 @@ from typing import Any
 from uuid import UUID
 
 import reflex as rx
+from starlette.concurrency import run_in_threadpool
 
 from WisPay.models import RouteGenerationInput, UserSnapshot, WorkflowInstance
 from WisPay.models._base import WisPayBaseModel
@@ -159,9 +160,30 @@ class approvals_state(rx.State):
                 )
 
     @rx.event
-    def load_queue(self) -> None:
-        """Event wrapper: refresh the pending-decision queue."""
-        self._refresh_queue()
+    async def load_queue(self) -> None:
+        """Event wrapper: refresh the queue off the event loop.
+
+        The first ``stores()`` call connects to Azure SQL, ensures the
+        schema, and seeds rules — seconds of blocking work that must not
+        run on the event loop (it stalled every open websocket session).
+        """
+
+        def _compute() -> tuple[list[QueueRow], str]:
+            try:
+                bundle = stores()
+                actor = self._actor()
+                rows: list[QueueRow] = []
+                self._collect_rows(bundle, actor, rows)
+            except RuntimeError as error:
+                return [], str(error)
+            except Exception as error:  # noqa: BLE001 - surfaced as a retryable banner
+                return [], self._storage_message(error)
+            return rows, ""
+
+        rows, message = await run_in_threadpool(_compute)
+        self.queue_rows = list(rows)
+        if message:
+            self.status_message = message
 
     @rx.event
     def create_route(self) -> None:
