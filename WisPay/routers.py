@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from WisPay.pages import (
+    approvals_page,
     dashboard_page,
-    not_found_page,
     request_new_page,
     requests_page,
     server_error_page,
@@ -50,10 +50,10 @@ ROUTES: tuple[Route, ...] = (
         description="Create and submit a Vendor or Employee Payment Request.",
     ),
     Route(
-        page=not_found_page,
-        route="/404",
-        title="Page Not Found · WisPay",
-        description="The requested WisPay page could not be found.",
+        page=approvals_page,
+        route="/approvals",
+        title="Approvals · WisPay",
+        description="Track and record Payment Request approval decisions.",
     ),
     Route(
         page=server_error_page,
