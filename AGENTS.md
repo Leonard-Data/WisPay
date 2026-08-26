@@ -13,7 +13,7 @@ The canonical domain glossary, delivery plan, product documentation, and ADRs li
 - `docs/product/APP-SETUP.md` — scaffold guide, DB schema, Azure Document Intelligence integration.
 - `docs/adr/` — architecture decision records. Surface conflicts; don't silently override.
 
-The app's visual implementation contract is the checked-in [`DESIGN.md`](DESIGN.md), synchronized from `C:\Users\binh.phung\projects\WisPay-Design-System\DESIGN.md`. Use [`assets/design-tokens.css`](assets/design-tokens.css) for source-derived visual tokens. Domain terminology, workflow invariants, security rules, and architecture remain governed by WisPay-doc.
+The app's visual implementation contract is the checked-in [`DESIGN.md`](DESIGN.md), synchronized from `C:\Users\binh.phung\projects\WisPay-Design-System\DESIGN.md`. Use [`assets/token.css`](assets/token.css) for source-derived visual tokens. Domain terminology, workflow invariants, security rules, and architecture remain governed by WisPay-doc.
 
 Two-repo boundary:
 
@@ -42,11 +42,11 @@ Copy `.env.example` to `.env` and fill Azure credentials before running anything
 ## How we work — read first
 
 - [`DESIGN.md`](DESIGN.md) — mandatory visual and interaction contract for any UI work.
-- [`assets/design-tokens.css`](assets/design-tokens.css) — source-derived tokens; do not add ad-hoc design values.
+- [`assets/token.css`](assets/token.css) — source-derived tokens; do not add ad-hoc design values.
 - [`CONVENTIONS.md`](CONVENTIONS.md) — coding rules (style, Reflex patterns, Pydantic, security/audit invariants, testing).
 - [`scripts/validate.sh`](scripts/validate.sh) — the pre-validation gate (lint + format + types + tests). **Must pass before any commit/push.**
 - [`.pre-commit-config.yaml`](.pre-commit-config.yaml) — git hooks (ruff on commit, full gate on push).
-- `.scratch/` — local Markdown issue tracker (one feature per dir: `spec.md` + `issues/NN-slug.md`). Mirrors WisPay-doc's convention.
+- GitHub Issues — the issue tracker for this repo (manage with `gh`). Feature specs live under `.scratch/<feature-slug>/spec.md`.
 
 ## Security & audit invariants (from CONTEXT.md)
 
@@ -74,10 +74,10 @@ For every new or changed UI component, page, layout, or interaction:
 
 1. Read `DESIGN.md` before coding and use its source-backed tokens, spacing, typography, layout, accessibility, content, and responsive rules.
 2. Fetch `https://buridan-ui.reflex.run/llms.txt` before selecting or implementing the component. Follow the current Buridan UI Reflex guidance and link the relevant component documentation in the work notes or PR description.
-3. Reuse the closest source example or UI-kit pattern from `C:\Users\binh.phung\projects\WisPay-Design-System` where one exists; do not invent a parallel component API or visual pattern.
+3. Reuse the closest source example or UI-kit pattern from `E:\projects\WisPay-deisgn` where one exists; do not invent a parallel component API or visual pattern.
 4. If Buridan UI is unavailable, its guidance conflicts with `DESIGN.md`, or the local design-system source is unavailable, stop and surface the conflict or outage. Do not silently substitute generic components.
 5. Preserve WisPay domain language and invariants: UI must distinguish recording an external payment from initiating money movement, and it must not hide permission or separation-of-duties explanations.
-6. Treat `DESIGN.md` and `assets/design-tokens.css` as synchronized snapshots. Update both when the source package changes, and record the source path and retrieval date in the change description.
+6. Treat `DESIGN.md` and `assets/token.css` as synchronized snapshots. Update both when the source package changes, and record the source path and retrieval date in the change description.
 7. Put reusable Reflex visual values and motion names in [`WisPay/styles.py`](WisPay/styles.py); pages and components should refer to that module instead of duplicating style dictionaries or animation strings.
 
 The Buridan endpoint is a component/API reference, not a replacement for WisPay's visual design system or domain/architecture sources.
@@ -158,7 +158,7 @@ When you need to compile, run, reload, or debug a Reflex application, follow the
 
 ### Issue tracker
 
-Issues for this repo are tracked as local markdown under `.scratch/<feature-slug>/` (one file per ticket under `issues/`). See `docs/agents/issue-tracker.md`.
+Issues are tracked as GitHub issues in `Leonard-Data/WisPay` via the `gh` CLI; feature specs remain under `.scratch/<feature-slug>/spec.md`. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
@@ -193,4 +193,3 @@ When changing `WisPay/pages/`, `WisPay/components/`, `WisPay/layout/`, or their 
 - Compare the rendered result against `docs/product/DESIGN.md` and fix visual or responsive findings before delivery.
 - Leave the browser open after the review so the user can inspect the rendered route. Show the screenshot paths and ask the user to approve the UI or request changes.
 - Passing `pytest`, compilation, or linting alone is not evidence that the UI review was completed.
-

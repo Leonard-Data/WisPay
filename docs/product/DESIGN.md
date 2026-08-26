@@ -6,7 +6,7 @@
 >
 > **Component source:** before implementing or changing a component, fetch and inspect [Buridan UI's current component index](https://buridan-ui.reflex.run/llms.txt). Use its Reflex component guidance together with the tokens and patterns in this file; do not invent a replacement component API.
 >
-> **Reflex token bridge:** [`assets/design-tokens.css`](assets/design-tokens.css) exposes the source tokens with a `--ws-` prefix for `WisPay/styles.py` and other component code.
+> **Reflex token bridge:** [`assets/token.css`](assets/token.css) exposes the source tokens with a `--ws-` prefix for `WisPay/styles.py` and other component code.
 >
 **Product context**
 

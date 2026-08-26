@@ -8,7 +8,7 @@ Single-context (no monorepo). The canonical domain docs do **not** live in this 
 
 ## Before exploring, read these (in WisPay-doc, not here)
 
-The canonical docs live at sibling path `../WisPay-doc` (`C:\Users\binh.phung\projects\WisPay-doc` in this environment):
+The canonical docs live at sibling path `../WisPay-doc` (`E:\projects\WisPay-doc` in this environment):
 
 - **`CONTEXT.md`** — canonical domain glossary and invariants (actors, request categories, lifecycle, security invariants). Do not invent conflicting terminology.
 - **`wispay-delivery-plan.md`** — phased delivery plan and release gates.
@@ -16,7 +16,7 @@ The canonical docs live at sibling path `../WisPay-doc` (`C:\Users\binh.phung\pr
 - **`docs/product/APP-SETUP.md`** — scaffold guide, DB schema, Azure Document Intelligence integration.
 - **`docs/adr/`** — architecture decision records. Surface conflicts; don't silently override.
 
-The app-level visual implementation contract is [`DESIGN.md`](../../DESIGN.md), synchronized from `C:\Users\binh.phung\projects\WisPay-Design-System\DESIGN.md`. Its source-derived tokens live in [`assets/design-tokens.css`](../../assets/design-tokens.css). Use the app contract for visual implementation while keeping domain, security, and architecture decisions in WisPay-doc.
+The app-level visual implementation contract is [`DESIGN.md`](../../DESIGN.md), synchronized from `E:\projects\WisPay-deisgn\DESIGN.md`. Its source-derived tokens live in [`assets/token.css`](../../assets/token.css). Use the app contract for visual implementation while keeping domain, security, and architecture decisions in WisPay-doc.
 
 ## Do not create a local CONTEXT.md or docs/adr/ in this repo
 

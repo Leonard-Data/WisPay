@@ -31,7 +31,7 @@ WisPay/                 # application package (app_name = "WisPay")
   services/             # Azure DI, Azure SQL, business logic (pure, testable)
 tests/                  # mirrors package layout; test_*.py
 scripts/                # tooling (validate.sh)
-.scratch/               # local issue tracker
+.scratch/               # feature specs (issues live on GitHub)
 ```
 
 Keep business logic **out** of components and pages — put it in `services/` so it is unit-testable.
@@ -77,7 +77,7 @@ From `CONTEXT.md` invariants — these gate every payment-related change:
 - Tests live in `tests/`, named `test_*.py`, mirroring the package.
 - F.I.R.S.T.: Fast, Independent, Repeatable, Self-validating, Timely.
 - Services and models get unit tests; workflows get integration tests covering normal, over-budget, exception, correction, and executive-approval paths (see delivery plan Phase 3 verify).
-- No test skips without a tracked issue in `.scratch/`.
+- No test skips without a tracked GitHub issue.
 
 ## Commits
 

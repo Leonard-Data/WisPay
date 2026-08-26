@@ -11,7 +11,7 @@ inside pages and components::
         style=Styles.page,
     )
 
-The values are backed by ``assets/design-tokens.css`` and the visual contract in
+The values are backed by ``assets/token.css`` and the visual contract in
 ``DESIGN.md``. Keep component selection and API usage aligned with the current
 Buridan UI catalog: https://buridan-ui.reflex.run/llms.txt
 """
