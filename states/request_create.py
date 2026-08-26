@@ -353,6 +353,15 @@ class RequestCreateState(rx.State):
             return
         self.warnings = list(duplicate_scan(self._submitted_models(), self._command()))
         self._submitted_models().append(result.request)
+        try:
+            from WisPay.services.runtime import stores
+
+            stores().requests.save(result.request)
+        except Exception:  # noqa: BLE001 - durability is best-effort this iteration
+            self.status_message = (
+                "Request submitted in this session; durable storage is unreachable, "
+                "so it will not appear in approval tracking."
+            )
         self.submitted_requests = [
             *self.submitted_requests,
             {

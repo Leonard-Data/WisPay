@@ -2192,3 +2192,292 @@
     min-width: 92px;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Approvals tracking (/approvals) — wispay-appr-*                     */
+/* ------------------------------------------------------------------ */
+
+.wispay-appr-status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ws-space-3);
+  padding: var(--ws-space-4);
+  border-left: 3px solid var(--ws-accent);
+  margin-bottom: var(--ws-space-5);
+}
+
+.wispay-appr-status-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--ws-fg);
+}
+
+.wispay-appr-status-dismiss {
+  min-height: 32px;
+  padding: 0 var(--ws-space-4);
+}
+
+.wispay-appr-actor-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ws-space-2);
+  margin-bottom: var(--ws-space-5);
+}
+
+.wispay-appr-actor-label {
+  font-family: var(--ws-font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: var(--ws-tracking-wide);
+  color: var(--ws-fg-2);
+  margin-right: var(--ws-space-2);
+}
+
+.wispay-appr-actor-chip {
+  min-height: 36px;
+  padding: 0 var(--ws-space-4);
+  border-radius: 999px;
+  border: 1px solid var(--ws-line);
+  background: var(--ws-surface);
+  color: var(--ws-fg-1);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.wispay-appr-actor-chip:hover { border-color: var(--ws-fg); }
+
+.wispay-appr-actor-chip.is-active {
+  background: var(--ws-fg);
+  border-color: var(--ws-fg);
+  color: var(--ws-bg);
+}
+
+.wispay-appr-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(280px, 3fr);
+  gap: var(--ws-space-5);
+  align-items: start;
+}
+
+.wispay-appr-table-wrap { overflow-x: auto; }
+
+.wispay-appr-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.wispay-appr-table-wrap th {
+  text-align: left;
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--ws-tracking-wide);
+  color: var(--ws-fg-2);
+  padding: var(--ws-space-3) var(--ws-space-3);
+  border-bottom: 1px solid var(--ws-line);
+}
+
+.wispay-appr-table-wrap td {
+  padding: var(--ws-space-4) var(--ws-space-3);
+  border-bottom: 1px solid var(--ws-line);
+  vertical-align: top;
+  color: var(--ws-fg-1);
+}
+
+.wispay-appr-title { display: block; color: var(--ws-fg); }
+
+.wispay-appr-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-pill {
+  display: inline-block;
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--ws-tracking-wide);
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ws-line);
+  color: var(--ws-fg-1);
+  white-space: nowrap;
+}
+
+.wispay-mono { font-family: var(--ws-font-mono); }
+
+.wispay-appr-row-action {
+  min-height: 34px;
+  padding: 0 var(--ws-space-4);
+  font-size: 13px;
+}
+
+.wispay-appr-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-5);
+}
+
+.wispay-appr-selected-meta { margin-top: var(--ws-space-3); }
+.wispay-appr-selected-meta .wispay-appr-title { margin-bottom: 2px; }
+
+.wispay-appr-reason-field {
+  display: block;
+  margin-top: var(--ws-space-4);
+  font-size: 13px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-appr-reason {
+  width: 100%;
+  min-height: 88px;
+  margin-top: var(--ws-space-2);
+  padding: var(--ws-space-3);
+  border: 1px solid var(--ws-line);
+  border-radius: var(--ws-radius, 8px);
+  background: var(--ws-bg);
+  color: var(--ws-fg);
+  font: inherit;
+}
+
+.wispay-appr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ws-space-2);
+  margin-top: var(--ws-space-4);
+}
+
+.wispay-appr-danger {
+  color: var(--ws-danger, #b3261e);
+  border-color: var(--ws-danger, #b3261e);
+}
+
+.wispay-appr-footnote {
+  margin-top: var(--ws-space-4);
+  font-size: 12.5px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-appr-timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ws-space-3);
+}
+
+.wispay-appr-timeline {
+  list-style: none;
+  margin: var(--ws-space-3) 0 0;
+  padding: 0;
+}
+
+.wispay-appr-step {
+  position: relative;
+  display: flex;
+  gap: var(--ws-space-3);
+  padding-bottom: var(--ws-space-5);
+}
+
+.wispay-appr-step:last-child { padding-bottom: 0; }
+
+.wispay-appr-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 18px;
+  bottom: -2px;
+  width: 2px;
+  background: color-mix(in srgb, var(--ws-fg) 12%, transparent);
+}
+
+.wispay-appr-dot {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--ws-line);
+  background: var(--ws-surface);
+}
+
+.wispay-appr-dot[data-state="approved"] { border-color: var(--ws-success, #1a7f37); background: var(--ws-success, #1a7f37); }
+.wispay-appr-dot[data-state="rejected"] { border-color: var(--ws-danger, #b3261e); background: var(--ws-danger, #b3261e); }
+.wispay-appr-dot[data-state="returned"] { border-color: var(--ws-warn, #9a6700); background: var(--ws-warn, #9a6700); }
+.wispay-appr-dot[data-state="pending"] { border-color: var(--ws-fg); }
+
+.wispay-appr-step-date {
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--ws-tracking-wide);
+  color: var(--ws-fg-2);
+}
+
+.wispay-appr-step-title {
+  font-size: 14px;
+  color: var(--ws-fg);
+  margin: 2px 0 6px;
+}
+
+.wispay-appr-step-status {
+  display: flex;
+  align-items: center;
+  gap: var(--ws-space-2);
+}
+
+.wispay-appr-current-note {
+  font-size: 12px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-appr-step-reason {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ws-fg-1);
+}
+
+.wispay-appr-route-row {
+  display: flex;
+  gap: var(--ws-space-2);
+  margin-top: var(--ws-space-4);
+  flex-wrap: wrap;
+}
+
+.wispay-appr-route-input {
+  flex: 1;
+  min-width: 160px;
+  min-height: 40px;
+  padding: 0 var(--ws-space-3);
+  border: 1px solid var(--ws-line);
+  border-radius: var(--ws-radius, 8px);
+  background: var(--ws-bg);
+  color: var(--ws-fg);
+  font-family: var(--ws-font-mono);
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .wispay-appr-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .wispay-appr-actions .wispay-button { width: 100%; }
+  .wispay-appr-row-action { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wispay-appr-actor-chip,
+  .wispay-appr-dot { transition: none; }
+}
+
+.wispay-appr-route-tool .wispay-card-heading {
+  display: block;
+}
+
+.wispay-appr-route-tool .wispay-card-kicker {
+  display: block;
+  margin-bottom: var(--ws-space-2);
+}

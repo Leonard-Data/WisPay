@@ -5,8 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from states.approvals import approvals_state
 from states.request_tracking import request_tracking_state
 from WisPay.pages import (
+    approvals_page,
     dashboard_page,
     not_found_page,
     request_detail_page,
@@ -48,17 +50,24 @@ ROUTES: tuple[Route, ...] = (
         on_load=request_tracking_state.refresh_queue,
     ),
     Route(
+        page=request_detail_page,
+        route="/requests/[number]",
+        title="Payment Request Detail · WisPay",
+        description="Track one Payment Request through review and approval.",
+        on_load=request_tracking_state.load_detail,
+    ),
+    Route(
         page=request_new_page,
         route="/requests/new",
         title="New Payment Request · WisPay",
         description="Create and submit a Vendor or Employee Payment Request.",
     ),
     Route(
-        page=request_detail_page,
-        route="/requests/[number]",
-        title="Payment Request Detail · WisPay",
-        description="Track one Payment Request through review and approval.",
-        on_load=request_tracking_state.load_detail,
+        page=approvals_page,
+        route="/approvals",
+        title="Approvals · WisPay",
+        description="Track and record Payment Request approval decisions.",
+        on_load=approvals_state.load_queue,
     ),
     Route(
         page=not_found_page,
