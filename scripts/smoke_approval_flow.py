@@ -20,6 +20,10 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import uuid4
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from WisPay.models import (
     AccountingDimension,
     BeneficiaryReference,
