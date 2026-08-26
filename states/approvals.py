@@ -19,7 +19,7 @@ from WisPay.models.enums import BudgetResult
 from WisPay.models.lifecycle import LifecycleState
 from WisPay.services import approval_workflow
 from WisPay.services.reference_data import RETENTION_POLICY_ID_PROTOTYPE
-from WisPay.services.runtime import stores
+from WisPay.services.runtime import is_connection_failure, stores
 from WisPay.services.sql_repositories import DurableAuditTrail
 from WisPay.services.workflow_rules import (
     SAMPLE_APPROVER_EXECUTIVE,
@@ -77,6 +77,11 @@ class approvals_state(rx.State):
     def _actor(self) -> UserSnapshot:
         return _SAMPLE_ACTORS[self.actor_name]
 
+    def _storage_message(self, error: BaseException) -> str:
+        if is_connection_failure(error):
+            return "Database connection was lost. The action was not applied — try again."
+        return f"Storage error: {error}"
+
     def _trail(self, bundle: Any) -> DurableAuditTrail:
         return DurableAuditTrail(
             bundle.audit,
@@ -111,6 +116,15 @@ class approvals_state(rx.State):
             return
         actor = self._actor()
         rows: list[QueueRow] = []
+        try:
+            self._collect_rows(bundle, actor, rows)
+        except Exception as error:  # noqa: BLE001 - surfaced as a retryable banner
+            self.status_message = self._storage_message(error)
+            self.queue_rows = []
+            return
+        self.queue_rows = rows
+
+    def _collect_rows(self, bundle: Any, actor: UserSnapshot, rows: list[QueueRow]) -> None:
         for instance in bundle.workflows.pending_instances():
             request = bundle.requests.get(instance.request_id)
             if request is None:
@@ -143,7 +157,6 @@ class approvals_state(rx.State):
                         ),
                     )
                 )
-        self.queue_rows = rows
 
     @rx.event
     def load_queue(self) -> None:
@@ -199,13 +212,17 @@ class approvals_state(rx.State):
         except approval_workflow.ApprovalWorkflowError as error:
             self.status_message = str(error)
             return
-        bundle.workflows.save_instance(result.instance)
-        bundle.requests.save(
-            request.evolve(
-                workflow_instance_id=result.instance.workflow_instance_id,
-                updated_at=now,
+        try:
+            bundle.workflows.save_instance(result.instance)
+            bundle.requests.save(
+                request.evolve(
+                    workflow_instance_id=result.instance.workflow_instance_id,
+                    updated_at=now,
+                )
             )
-        )
+        except Exception as error:  # noqa: BLE001 - retryable banner
+            self.status_message = self._storage_message(error)
+            return
         steps = len(result.instance.steps)
         self.status_message = (
             f"Approval route {rule_version} generated with {steps} step(s). "
@@ -236,6 +253,13 @@ class approvals_state(rx.State):
         except RuntimeError as error:
             self.status_message = str(error)
             return
+        try:
+            self._load_selection(bundle, key)
+        except Exception as error:  # noqa: BLE001 - retryable banner
+            self.status_message = self._storage_message(error)
+            return
+
+    def _load_selection(self, bundle: Any, key: str) -> None:
         instance_id_text, _, _step_id_text = key.partition(":")
         try:
             instance_id = UUID(instance_id_text)
@@ -306,13 +330,13 @@ class approvals_state(rx.State):
         except ValueError:
             self.status_message = "Invalid selection."
             return
-        instance = bundle.workflows.get_instance(command.workflow_instance_id)
-        if instance is None:
-            self.status_message = "That approval route no longer exists."
-            return
-        request = bundle.requests.get(instance.request_id)
-        requester_id = request.requester.external_identity_id if request else ""
         try:
+            instance = bundle.workflows.get_instance(command.workflow_instance_id)
+            if instance is None:
+                self.status_message = "That approval route no longer exists."
+                return
+            request = bundle.requests.get(instance.request_id)
+            requester_id = request.requester.external_identity_id if request else ""
             result = approval_workflow.decide(
                 command,
                 instance=instance,
@@ -320,10 +344,13 @@ class approvals_state(rx.State):
                 now=datetime.now(UTC),
                 trail_appender=self._trail(bundle),
             )
+            bundle.workflows.save_instance(result.instance)
         except approval_workflow.ApprovalWorkflowError as error:
             self.status_message = str(error)
             return
-        bundle.workflows.save_instance(result.instance)
+        except Exception as error:  # noqa: BLE001 - retryable banner
+            self.status_message = self._storage_message(error)
+            return
         outcome = result.instance.final_outcome.value
         note = " All required approvals are recorded." if result.route_completed else ""
         self.status_message = f"Decision recorded ({outcome}).{note}"
