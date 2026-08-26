@@ -5,7 +5,7 @@ This repo holds the working **Reflex** application. WisPay-doc remains the sourc
 
 ## Source of truth
 
-The canonical domain glossary, delivery plan, product documentation, and ADRs live in the sibling **WisPay-doc** repo (`../WisPay-doc`; currently `C:\Users\binh.phung\projects\WisPay-doc`). Read these **before** writing feature code:
+The canonical domain glossary, delivery plan, product documentation, and ADRs live in the sibling **WisPay-doc** repo (`../WisPay-doc`; currently `E:\projects\WisPay-doc`). Read these **before** writing feature code:
 
 - `CONTEXT.md` — canonical domain glossary and invariants (actors, request categories, lifecycle, security invariants). Do not invent conflicting terminology.
 - `wispay-delivery-plan.md` — phased delivery plan and release gates.
@@ -13,7 +13,7 @@ The canonical domain glossary, delivery plan, product documentation, and ADRs li
 - `docs/product/APP-SETUP.md` — scaffold guide, DB schema, Azure Document Intelligence integration.
 - `docs/adr/` — architecture decision records. Surface conflicts; don't silently override.
 
-The app's visual implementation contract is the checked-in [`DESIGN.md`](DESIGN.md), synchronized from `C:\Users\binh.phung\projects\WisPay-Design-System\DESIGN.md`. Use [`assets/token.css`](assets/token.css) for source-derived visual tokens. Domain terminology, workflow invariants, security rules, and architecture remain governed by WisPay-doc.
+The app's visual implementation contract is the checked-in [`DESIGN.md`](DESIGN.md), synchronized from `E:\projects\WisPay-Design-System\DESIGN.md`. Use [`assets/token.css`](assets/token.css) for source-derived visual tokens. Domain terminology, workflow invariants, security rules, and architecture remain governed by WisPay-doc.
 
 Two-repo boundary:
 
@@ -72,15 +72,15 @@ For every change under `WisPay/models/`:
 
 For every new or changed UI component, page, layout, or interaction. Reusable components go in `WisPay/components/` — documented, page-agnostic, composed by pages; placement and documentation rules: [CONVENTIONS.md → Components](CONVENTIONS.md#components):
 
-1. Read `DESIGN.md` before coding and use its source-backed tokens, spacing, typography, layout, accessibility, content, and responsive rules.
-2. Fetch `https://buridan-ui.reflex.run/llms.txt` before selecting or implementing the component. Follow the current Buridan UI Reflex guidance and link the relevant component documentation in the work notes or PR description.
+1. **Start at Buridan UI**: fetch `https://buridan-ui.reflex.run/llms.txt` and pick the closest component before writing any UI code; read that component's docs page for its API. The llms.txt links point at a dead host — resolve doc pages on `buridan-ui.reflex.run` by appending `.md` (e.g. `https://buridan-ui.reflex.run/docs/components/field.md`). Link the chosen component page in the work notes or PR description. Adopt a component via the Buridan CLI when it becomes part of the app.
+2. **`DESIGN.md` + `assets/token.css` govern everything Buridan supplies**: layout, spacing, typography, copy, accessibility, responsive behavior, and visuals. Buridan themes through semantic CSS-variable tokens (`--primary`, `--radius`, … rendered as `bg-background`-style utilities) — map those token names onto the values in `assets/token.css` (exposed through [`WisPay/styles.py`](WisPay/styles.py)) so components pick up WisPay's design system instead of Buridan's defaults.
 3. Reuse the closest source example or UI-kit pattern from `E:\projects\WisPay-deisgn` where one exists; do not invent a parallel component API or visual pattern.
 4. If Buridan UI is unavailable, its guidance conflicts with `DESIGN.md`, or the local design-system source is unavailable, stop and surface the conflict or outage. Do not silently substitute generic components.
 5. Preserve WisPay domain language and invariants: UI must distinguish recording an external payment from initiating money movement, and it must not hide permission or separation-of-duties explanations.
 6. Treat `DESIGN.md` and `assets/token.css` as synchronized snapshots. Update both when the source package changes, and record the source path and retrieval date in the change description.
 7. Put reusable Reflex visual values and motion names in [`WisPay/styles.py`](WisPay/styles.py); pages and components should refer to that module instead of duplicating style dictionaries or animation strings.
 
-The Buridan endpoint is a component/API reference, not a replacement for WisPay's visual design system or domain/architecture sources.
+Buridan supplies component structure and behavior only — domain language, architecture, and security invariants come from the WisPay-doc sources, never from a component library.
 
 ## Validation
 
