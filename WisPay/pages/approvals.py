@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import reflex as rx
 
-from states.approvals import approvals_state
+from states.approvals import QueueRow, TimelineRow, approvals_state
 from WisPay.layout.shell import shell
 
 
@@ -92,24 +90,24 @@ def _actor_switcher() -> rx.Component:
     )
 
 
-def _queue_row(row: dict[str, Any]) -> rx.Component:
+def _queue_row(row: QueueRow) -> rx.Component:
     """Render one pending decision row."""
     return rx.el.tr(
-        rx.el.td(rx.el.span(row["request_number"], class_name="wispay-mono")),
+        rx.el.td(rx.el.span(row.request_number, class_name="wispay-mono")),
         rx.el.td(
             rx.el.div(
-                rx.el.span(row["title"], class_name="wispay-appr-title"),
-                rx.el.span(row["beneficiary"], class_name="wispay-appr-sub"),
+                rx.el.span(row.title, class_name="wispay-appr-title"),
+                rx.el.span(row.beneficiary, class_name="wispay-appr-sub"),
             )
         ),
-        rx.el.td(rx.el.span(row["amount_display"], class_name="wispay-mono")),
-        rx.el.td(row["requester_name"]),
-        rx.el.td(rx.el.span(row["approver_role"], class_name="wispay-appr-pill")),
-        rx.el.td(row["due_display"]),
+        rx.el.td(rx.el.span(row.amount_display, class_name="wispay-mono")),
+        rx.el.td(row.requester_name),
+        rx.el.td(rx.el.span(row.approver_role, class_name="wispay-appr-pill")),
+        rx.el.td(row.due_display),
         rx.el.td(
             rx.el.button(
                 "Review & decide",
-                on_click=lambda: approvals_state.select_row(row["key"]),  # type: ignore[operator]
+                on_click=lambda: approvals_state.select_row(row.key),  # type: ignore[operator]
                 class_name="wispay-button wispay-appr-row-action",
                 type="button",
             )
@@ -257,32 +255,32 @@ def _timeline_card() -> rx.Component:
     )
 
 
-def _timeline_item(item: dict[str, Any]) -> rx.Component:
+def _timeline_item(item: TimelineRow) -> rx.Component:
     """Render one vertical-timeline step (Buridan Timeline anatomy, ported)."""
     return rx.el.li(
         rx.el.span(
             class_name="wispay-appr-dot",
-            data_state=item["decision"].lower(),
+            data_state=item.decision.lower(),
             aria_hidden=True,
         ),
         rx.el.div(
             rx.el.span(
-                f"Step {item['sequence']} · {item['approver_role']}",
+                f"Step {item.sequence} · {item.approver_role}",
                 class_name="wispay-appr-step-date",
             ),
-            rx.el.p(item["approver_name"], class_name="wispay-appr-step-title"),
+            rx.el.p(item.approver_name, class_name="wispay-appr-step-title"),
             rx.el.div(
-                rx.el.span(item["decision"], class_name="wispay-appr-pill"),
+                rx.el.span(item.decision, class_name="wispay-appr-pill"),
                 rx.cond(
-                    item["is_current"],
+                    item.is_current,
                     rx.el.span("Awaiting decision", class_name="wispay-appr-current-note"),
                     rx.fragment(),
                 ),
                 class_name="wispay-appr-step-status",
             ),
             rx.cond(
-                item["reason"] != "",
-                rx.el.p(item["reason"], class_name="wispay-appr-step-reason"),
+                item.reason != "",
+                rx.el.p(item.reason, class_name="wispay-appr-step-reason"),
                 rx.fragment(),
             ),
             class_name="wispay-appr-step-body",

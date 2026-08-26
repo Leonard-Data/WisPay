@@ -12,9 +12,9 @@ persistence, audit evidence — following ADR-0005 seams and CONTEXT.md invarian
 
 | # | Ticket | Type | Status | Blocked by |
 | --- | --- | --- | --- | --- |
-| 01 | [01-sql-persistence.md](issues/01-sql-persistence.md) | task | claimed | — |
-| 02 | [02-approval-services.md](issues/02-approval-services.md) | task | claimed | — |
-| 03 | [03-approvals-state-and-page.md](issues/03-approvals-state-and-page.md) | task | claimed | — |
+| 01 | [01-sql-persistence.md](issues/01-sql-persistence.md) | task | resolved | — |
+| 02 | [02-approval-services.md](issues/02-approval-services.md) | task | resolved | — |
+| 03 | [03-approvals-state-and-page.md](issues/03-approvals-state-and-page.md) | task | resolved | — |
 | 04 | [04-integration-e2e-browser-review.md](issues/04-integration-e2e-browser-review.md) | task | needs-triage | 01, 02, 03 |
 
 External blocker (environment, not code): Azure SQL reachability — ODBC Driver 18 missing

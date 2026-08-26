@@ -1896,3 +1896,12 @@
   .wispay-appr-actor-chip,
   .wispay-appr-dot { transition: none; }
 }
+
+.wispay-appr-route-tool .wispay-card-heading {
+  display: block;
+}
+
+.wispay-appr-route-tool .wispay-card-kicker {
+  display: block;
+  margin-bottom: var(--ws-space-2);
+}

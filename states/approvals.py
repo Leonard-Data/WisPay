@@ -14,6 +14,7 @@ from uuid import UUID
 import reflex as rx
 
 from WisPay.models import RouteGenerationInput, UserSnapshot, WorkflowInstance
+from WisPay.models._base import WisPayBaseModel
 from WisPay.models.enums import BudgetResult
 from WisPay.models.lifecycle import LifecycleState
 from WisPay.services import approval_workflow
@@ -25,23 +26,45 @@ from WisPay.services.workflow_rules import (
     SAMPLE_APPROVER_LINE_MANAGER,
 )
 
+
+class QueueRow(WisPayBaseModel):
+    """One actionable approval step shown in the pending queue."""
+
+    key: str
+    request_number: str
+    title: str
+    beneficiary: str
+    amount_display: str
+    requester_name: str
+    approver_role: str
+    due_display: str
+
+
+class TimelineRow(WisPayBaseModel):
+    """One step in the frozen route timeline."""
+
+    sequence: int
+    approver_name: str
+    approver_role: str
+    decision: str
+    decided_display: str
+    reason: str
+    is_current: bool
+
+
 _SAMPLE_ACTORS: dict[str, UserSnapshot] = {
     "Line Manager": SAMPLE_APPROVER_LINE_MANAGER,
     "Executive Approver": SAMPLE_APPROVER_EXECUTIVE,
 }
 
 
-def _amount_display(amount_text: str, currency: str) -> str:
-    return f"{amount_text} {currency}"
-
-
 class approvals_state(rx.State):
     """State for the /approvals tracking surface."""
 
-    queue_rows: list[dict[str, Any]] = []
-    timeline_rows: list[dict[str, Any]] = []
+    queue_rows: list[QueueRow] = []
+    timeline_rows: list[TimelineRow] = []
     selected_key: str = ""
-    selected_summary: dict[str, Any] = {}
+    selected_summary: dict[str, str] = {}
     reason_text: str = ""
     route_number: str = ""
     status_message: str = ""
@@ -87,7 +110,7 @@ class approvals_state(rx.State):
             self.queue_rows = []
             return
         actor = self._actor()
-        rows: list[dict[str, Any]] = []
+        rows: list[QueueRow] = []
         for instance in bundle.workflows.pending_instances():
             request = bundle.requests.get(instance.request_id)
             if request is None:
@@ -102,25 +125,30 @@ class approvals_state(rx.State):
                     continue
                 scale = request.total_amount.decimal_scale
                 rows.append(
-                    {
-                        "key": f"{instance.workflow_instance_id}:{step.step_id}",
-                        "request_number": request.request_number or "—",
-                        "title": request.purpose,
-                        "beneficiary": request.beneficiary.display_name,
-                        "amount_display": (
+                    QueueRow(
+                        key=f"{instance.workflow_instance_id}:{step.step_id}",
+                        request_number=request.request_number or "—",
+                        title=request.purpose,
+                        beneficiary=request.beneficiary.display_name,
+                        amount_display=(
                             f"{request.total_amount.amount:>,.{scale}f}"
                             f" {request.total_amount.currency_code}"
                         ),
-                        "requester_name": request.requester.display_name,
-                        "approver_role": step.role.value,
-                        "due_display": (
+                        requester_name=request.requester.display_name,
+                        approver_role=step.role.value,
+                        due_display=(
                             step.due_at.astimezone(UTC).strftime("%d %b %Y")
                             if step.due_at is not None
                             else "—"
                         ),
-                    }
+                    )
                 )
         self.queue_rows = rows
+
+    @rx.event
+    def load_queue(self) -> None:
+        """Event wrapper: refresh the pending-decision queue."""
+        self._refresh_queue()
 
     @rx.event
     def create_route(self) -> None:
@@ -225,23 +253,23 @@ class approvals_state(rx.State):
             "outcome": instance.final_outcome.value,
         }
         self.timeline_rows = [
-            {
-                "sequence": step.sequence,
-                "approver_name": step.approver.display_name,
-                "approver_role": step.role.value,
-                "decision": step.decision.value,
-                "decided_display": (
+            TimelineRow(
+                sequence=step.sequence,
+                approver_name=step.approver.display_name,
+                approver_role=step.role.value,
+                decision=step.decision.value,
+                decided_display=(
                     step.decided_at.astimezone(UTC).strftime("%d %b %Y %H:%M")
                     if step.decided_at is not None
                     else ""
                 ),
-                "reason": step.reason or "",
-                "is_current": (
+                reason=step.reason or "",
+                is_current=(
                     step.decision.value == "Pending"
                     and step.sequence in actionable
                     and instance.final_outcome.value == "Pending"
                 ),
-            }
+            )
             for step in sorted(instance.steps, key=lambda item: item.sequence)
         ]
 

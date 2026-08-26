@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from states.approvals import approvals_state
 from WisPay.pages import (
     approvals_page,
     dashboard_page,
@@ -28,6 +29,7 @@ class Route:
     route: str
     title: str
     description: str
+    on_load: object | None = None
 
 
 ROUTES: tuple[Route, ...] = (
@@ -54,6 +56,7 @@ ROUTES: tuple[Route, ...] = (
         route="/approvals",
         title="Approvals · WisPay",
         description="Track and record Payment Request approval decisions.",
+        on_load=approvals_state.load_queue,
     ),
     Route(
         page=server_error_page,
@@ -78,4 +81,5 @@ def register_routes(app: rx.App) -> None:
             route=route.route,
             title=route.title,
             description=route.description,
+            on_load=route.on_load,
         )
