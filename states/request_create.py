@@ -16,6 +16,7 @@ from typing import Any
 import reflex as rx
 from pydantic import ValidationError as PydanticValidationError
 
+from states.auth_state import AuthState
 from WisPay.models import PaymentRequest  # noqa: TC001 - needed for Reflex hints
 from WisPay.services.audit_trail import InMemoryAuditTrail
 from WisPay.services.reference_data import (
@@ -81,7 +82,7 @@ def _format_amount(value: Decimal, currency: str) -> str:
     return f"{digits} {currency.upper()}"
 
 
-class RequestCreateState(rx.State):
+class RequestCreateState(AuthState):
     """Wizard draft, validation outcomes, and session submission store."""
 
     # Wizard position and selection
