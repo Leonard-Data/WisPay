@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from WisPay.pages import (
     dashboard_page,
     not_found_page,
+    request_new_page,
     requests_page,
     server_error_page,
     unavailable_page,
@@ -41,6 +42,12 @@ ROUTES: tuple[Route, ...] = (
         route="/requests",
         title="Payment Requests · WisPay",
         description="Review and track Payment Requests in WisPay.",
+    ),
+    Route(
+        page=request_new_page,
+        route="/requests/new",
+        title="New Payment Request · WisPay",
+        description="Create and submit a Vendor or Employee Payment Request.",
     ),
     Route(
         page=not_found_page,

@@ -1,4 +1,4 @@
-/* WisPay application shell. Values come from assets/design-tokens.css. */
+/* WisPay application shell. Values come from assets/token.css. */
 
 .wispay-shell {
   min-height: 100vh;
@@ -863,4 +863,756 @@
   .wispay-icon-button {
     transition-duration: 1ms;
   }
+}
+
+
+/* ---- New Payment Request wizard (/requests/new) ---------------------- */
+/* Ported from the new-request.html source example onto --ws-* tokens.   */
+
+.wispay-new-shell {
+  max-width: 880px;
+  width: 100%;
+}
+
+.wispay-content .wispay-new-shell {
+  margin-inline: auto;
+}
+
+.wispay-new-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ws-space-6);
+  margin-bottom: var(--ws-space-8);
+}
+
+.wispay-new-header-copy {
+  max-width: 620px;
+}
+
+.wispay-new-title {
+  margin-bottom: var(--ws-space-2);
+  font-family: var(--ws-font-display);
+  font-size: var(--ws-text-3xl);
+  font-weight: 300;
+  letter-spacing: var(--ws-tracking-display);
+  line-height: var(--ws-leading-tight);
+  color: var(--ws-fg);
+}
+
+.wispay-new-eyebrow,
+.wispay-new-meta {
+  color: var(--ws-muted);
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wispay-new-muted {
+  margin-top: var(--ws-space-2);
+  color: var(--ws-muted);
+  font-size: var(--ws-text-sm);
+}
+
+.wispay-new-draft-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 var(--ws-space-3);
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-surface-warm);
+  color: var(--ws-fg-2);
+  box-shadow: var(--ws-elev-ring);
+  font: 11px var(--ws-font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wispay-new-draft-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-fg);
+}
+
+.wispay-new-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: var(--ws-space-8);
+  border-bottom: 1px solid var(--ws-border);
+}
+
+.wispay-new-step {
+  position: relative;
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 var(--ws-space-3);
+  border: 0;
+  background: transparent;
+  color: var(--ws-muted);
+  cursor: pointer;
+  font-size: var(--ws-text-sm);
+  font-weight: 500;
+  text-align: left;
+  transition:
+    color var(--ws-motion-fast) var(--ws-ease-standard),
+    background var(--ws-motion-fast) var(--ws-ease-standard);
+}
+
+.wispay-new-step:not(.is-future):hover {
+  background: var(--ws-surface);
+  color: var(--ws-fg);
+}
+
+.wispay-new-step::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: transparent;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform var(--ws-motion-base) var(--ws-ease-standard),
+    background var(--ws-motion-fast) var(--ws-ease-standard);
+}
+
+.wispay-new-step.is-active {
+  color: var(--ws-fg);
+}
+
+.wispay-new-step.is-active::after {
+  background: var(--ws-fg);
+  transform: scaleX(1);
+}
+
+.wispay-new-step.is-done {
+  color: var(--ws-fg-2);
+}
+
+.wispay-new-step.is-future {
+  pointer-events: none;
+  opacity: 1;
+  color: color-mix(in oklch, var(--ws-muted) 58%, transparent);
+}
+
+.wispay-new-step-num {
+  display: grid;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-surface);
+  color: var(--ws-muted);
+  box-shadow: rgba(0, 0, 0, 0.07) 0 0 0 0.5px inset;
+  font: 10px var(--ws-font-mono);
+}
+
+.wispay-new-step.is-active .wispay-new-step-num {
+  background: var(--ws-fg);
+  color: var(--ws-bg);
+  box-shadow: none;
+}
+
+.wispay-new-step.is-done .wispay-new-step-num {
+  background: var(--ws-surface-warm);
+  color: var(--ws-fg);
+}
+
+.wispay-new-panel {
+  animation: wispay-page-in var(--ws-motion-base) var(--ws-ease-standard);
+  margin-bottom: var(--ws-space-4);
+}
+
+.wispay-new-h3 {
+  font-family: var(--ws-font-display);
+  font-size: var(--ws-text-lg);
+  font-weight: 600;
+  color: var(--ws-fg);
+}
+
+.wispay-new-h4 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.wispay-new-intro-gap {
+  margin-bottom: var(--ws-space-5);
+}
+
+.wispay-new-group + .wispay-new-group {
+  margin-top: var(--ws-space-6);
+}
+
+.wispay-new-group-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ws-space-3);
+  margin-bottom: var(--ws-space-3);
+}
+
+.wispay-new-group-label strong {
+  font-size: var(--ws-text-sm);
+  font-weight: 600;
+}
+
+.wispay-new-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ws-space-3);
+}
+
+.wispay-new-type-grid.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.wispay-new-type-card {
+  position: relative;
+  min-height: 108px;
+  padding: var(--ws-space-5);
+  border: 0;
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-ring);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform var(--ws-motion-base) var(--ws-ease-standard),
+    box-shadow var(--ws-motion-base) var(--ws-ease-standard),
+    background var(--ws-motion-fast) var(--ws-ease-standard);
+}
+
+.wispay-new-type-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    var(--ws-elev-ring),
+    color-mix(in oklch, var(--ws-fg) 7%, transparent) 0 8px 22px;
+}
+
+.wispay-new-type-card.is-selected {
+  background: var(--ws-surface-warm);
+  box-shadow:
+    color-mix(in oklch, var(--ws-fg) 52%, transparent) 0 0 0 1px inset,
+    rgba(78, 50, 23, 0.04) 0 6px 16px;
+}
+
+.wispay-new-type-title {
+  display: block;
+  padding-right: 64px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.wispay-new-type-copy {
+  display: block;
+  max-width: 48ch;
+  margin-top: 6px;
+  color: var(--ws-fg-2);
+  font-size: var(--ws-text-sm);
+  line-height: 1.45;
+}
+
+.wispay-new-type-state {
+  position: absolute;
+  top: var(--ws-space-4);
+  right: var(--ws-space-4);
+  color: var(--ws-muted);
+  font: 10px var(--ws-font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wispay-new-type-card.is-selected .wispay-new-type-state {
+  color: var(--ws-fg);
+}
+
+.wispay-new-section + .wispay-new-section {
+  margin-top: var(--ws-space-8);
+  padding-top: var(--ws-space-6);
+  border-top: 1px solid var(--ws-border-soft);
+}
+
+.wispay-new-section-head {
+  margin-bottom: var(--ws-space-4);
+}
+
+.wispay-new-section-head h3 {
+  margin-bottom: 3px;
+  font-size: var(--ws-text-base);
+  font-weight: 600;
+}
+
+.wispay-new-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ws-space-5);
+}
+
+.wispay-new-field-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+.wispay-new-field-tag {
+  color: var(--ws-muted);
+  font: 10px var(--ws-font-mono);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.wispay-new-field-error {
+  display: block;
+  margin-top: 4px;
+  color: color-mix(in oklch, var(--ws-danger) 82%, black);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wispay-new-input {
+  display: block;
+  min-height: 44px;
+  width: 100%;
+  padding: 10px var(--ws-space-3);
+  border: 0;
+  border-radius: var(--ws-radius-sm);
+  background: var(--ws-surface);
+  box-shadow: rgba(0, 0, 0, 0.07) 0 0 0 0.5px inset;
+  color: var(--ws-fg);
+  font-family: var(--ws-font-body);
+  font-size: 14px;
+}
+
+.wispay-new-select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ws-muted) 50%),
+    linear-gradient(135deg, var(--ws-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 13px) calc(50% - 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: var(--ws-space-6);
+}
+
+.wispay-new-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.wispay-new-input:focus-visible {
+  outline: none;
+  box-shadow: var(--ws-focus-ring);
+}
+
+.wispay-new-gross-card {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ws-space-5);
+  min-height: 78px;
+  padding: var(--ws-space-4) var(--ws-space-5);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-surface-warm);
+  box-shadow:
+    rgba(78, 50, 23, 0.04) 0 6px 16px,
+    rgba(0, 0, 0, 0.05) 0 0 0 1px inset;
+}
+
+.wispay-new-gross-card strong {
+  display: block;
+  font-size: var(--ws-text-sm);
+  font-weight: 500;
+}
+
+.wispay-new-gross-card small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ws-muted);
+  font-size: 11px;
+}
+
+.wsp-num,
+.wispay-new-num {
+  font-family: var(--ws-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.wispay-new-gross-value {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.wispay-new-callout {
+  padding: var(--ws-space-5);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-surface);
+  box-shadow: rgba(0, 0, 0, 0.075) 0 0 0 0.5px inset;
+  margin-top: var(--ws-space-4);
+}
+
+.wispay-new-doc-checklist {
+  padding: var(--ws-space-2) var(--ws-space-5);
+}
+
+.wispay-new-doc-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ws-border-soft);
+}
+
+.wispay-new-doc-row:last-child {
+  border-bottom: 0;
+}
+
+.wispay-new-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-danger);
+}
+
+.wispay-new-doc-row.is-met .wispay-new-dot {
+  background: var(--ws-success);
+}
+
+.wispay-new-doc-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wispay-new-doc-meta {
+  display: block;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+  color: var(--ws-muted);
+  font: 11px var(--ws-font-mono);
+}
+
+.wispay-new-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ws-space-2);
+}
+
+.wispay-new-upload-zone {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 var(--ws-space-4);
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-raised);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wispay-new-upload-zone:focus-within {
+  box-shadow: var(--ws-focus-ring);
+}
+
+.wispay-button.wispay-new-button-secondary {
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-raised);
+  color: var(--ws-fg);
+}
+
+.wispay-button.wispay-new-button-ghost {
+  background: transparent;
+  box-shadow: none;
+  color: var(--ws-muted);
+}
+
+.wispay-button.wispay-new-button-ghost:hover {
+  background: var(--ws-surface);
+  color: var(--ws-fg);
+}
+
+.wispay-new-validation {
+  margin-bottom: var(--ws-space-5);
+  padding: var(--ws-space-4) var(--ws-space-5);
+  border-radius: var(--ws-radius-md);
+}
+
+.wispay-new-validation.is-error {
+  background: color-mix(in oklch, var(--ws-danger) 6%, white);
+  box-shadow: color-mix(in oklch, var(--ws-danger) 30%, transparent) 0 0 0 1px inset;
+}
+
+.wispay-new-validation.is-warn {
+  background: color-mix(in oklch, var(--ws-warn) 8%, white);
+  box-shadow: color-mix(in oklch, var(--ws-warn) 34%, transparent) 0 0 0 1px inset;
+}
+
+.wispay-new-validation-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.wispay-new-validation-mark {
+  display: grid;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-ring);
+  font: 11px var(--ws-font-mono);
+}
+
+.wispay-new-error-list {
+  margin: 8px 0 0;
+  padding: 0 0 0 29px;
+  color: var(--ws-fg-2);
+  font-size: var(--ws-text-sm);
+}
+
+.wispay-new-review-summary {
+  margin-bottom: var(--ws-space-5);
+  padding: var(--ws-space-4) var(--ws-space-5);
+  border-radius: var(--ws-radius-md);
+}
+
+.wispay-new-summary-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--ws-space-4);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--ws-border-soft);
+}
+
+.wispay-new-summary-row:last-child {
+  border-bottom: 0;
+}
+
+.wispay-new-summary-row dt {
+  color: var(--ws-muted);
+  font-size: var(--ws-text-sm);
+}
+
+.wispay-new-summary-row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wispay-new-review-note {
+  margin-top: var(--ws-space-4);
+  color: var(--ws-muted);
+  font-size: var(--ws-text-sm);
+}
+
+.wispay-new-review-note strong {
+  color: var(--ws-fg);
+}
+
+.wispay-new-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ws-space-4);
+  margin-top: var(--ws-space-8);
+  padding: var(--ws-space-4) 0;
+  background: color-mix(in oklch, var(--ws-bg) 94%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--ws-border-soft);
+}
+
+.wispay-new-live-status {
+  min-height: 18px;
+  margin-bottom: var(--ws-space-2);
+  color: var(--ws-muted);
+  font: 11px var(--ws-font-mono);
+}
+
+.wispay-new-success {
+  padding: var(--ws-space-8) var(--ws-space-6);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-ring);
+}
+
+.wispay-new-request-number {
+  display: inline-block;
+  margin-top: var(--ws-space-4);
+  font-size: var(--ws-text-xl);
+}
+
+.wispay-new-pill-success {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  margin-left: var(--ws-space-3);
+  padding: 0 var(--ws-space-3);
+  border-radius: var(--ws-radius-pill);
+  background: color-mix(in oklch, var(--ws-success) 12%, white);
+  color: color-mix(in oklch, var(--ws-success) 70%, black);
+  font: 11px var(--ws-font-mono);
+  text-transform: uppercase;
+}
+
+.wispay-new-pill-success::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-success);
+}
+
+.wispay-new-inline-actions {
+  display: flex;
+  gap: var(--ws-space-3);
+  margin-top: var(--ws-space-5);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .wispay-new-type-grid,
+  .wispay-new-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wispay-new-header {
+    margin-bottom: var(--ws-space-6);
+  }
+}
+
+@media (max-width: 560px) {
+  .wispay-new-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: calc(var(--ws-container-gutter-phone) * -1);
+  }
+
+  .wispay-new-step {
+    flex-direction: column;
+    justify-content: center;
+    min-height: 58px;
+    gap: 4px;
+    padding: 7px 3px;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .wispay-new-type-card {
+    min-height: 100px;
+  }
+
+  .wispay-new-gross-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wispay-new-gross-value {
+    text-align: left;
+  }
+
+  .wispay-new-doc-row {
+    grid-template-columns: 10px minmax(0, 1fr);
+  }
+
+  .wispay-new-doc-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .wispay-new-summary-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .wispay-new-summary-row dd {
+    text-align: left;
+  }
+
+  .wispay-new-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .wispay-new-actions > .wispay-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wispay-new-panel {
+    animation: none !important;
+  }
+
+  .wispay-new-step::after,
+  .wispay-new-type-card {
+    transition: none;
+  }
+}
+
+/* Wizard addendum: containers used by page structure. */
+
+.wispay-new-card {
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg);
+  box-shadow: var(--ws-elev-ring);
+}
+
+.wispay-new-field {
+  min-width: 0;
+}
+
+.wispay-new-gross-label {
+  color: var(--ws-fg);
+}
+
+.wispay-new-h2 {
+  font-family: var(--ws-font-display);
+  font-size: var(--ws-text-2xl);
+  font-weight: 300;
+  letter-spacing: var(--ws-tracking-display);
+  color: var(--ws-fg);
+}
+
+.wispay-new-upload-label {
+  pointer-events: none;
+}
+
+.wispay-new-upload-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ws-space-2);
+}
+
+.wispay-button.wispay-new-attach {
+  min-height: 34px;
+  padding: 0 var(--ws-space-4);
+  font-size: 13px;
 }
