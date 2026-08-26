@@ -240,6 +240,7 @@ def _timeline_card() -> rx.Component:
                     rx.el.span(
                         approvals_state.selected_summary["outcome"],
                         class_name="wispay-appr-pill",
+                        data_state=approvals_state.selected_summary["outcome"].lower(),
                     ),
                     class_name="wispay-appr-timeline-head",
                 ),
@@ -270,7 +271,11 @@ def _timeline_item(item: TimelineRow) -> rx.Component:
             ),
             rx.el.p(item.approver_name, class_name="wispay-appr-step-title"),
             rx.el.div(
-                rx.el.span(item.decision, class_name="wispay-appr-pill"),
+                rx.el.span(
+                    item.decision,
+                    class_name="wispay-appr-pill",
+                    data_state=item.decision.lower(),
+                ),
                 rx.cond(
                     item.is_current,
                     rx.el.span("Awaiting decision", class_name="wispay-appr-current-note"),

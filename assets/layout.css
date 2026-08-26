@@ -1905,3 +1905,46 @@
   display: block;
   margin-bottom: var(--ws-space-2);
 }
+
+/* Status badge colors (DESIGN.md 6.4): color is a status signal only. */
+.wispay-appr-pill[data-state="approved"] {
+  background: color-mix(in srgb, var(--ws-success) 14%, var(--ws-surface));
+  border-color: transparent;
+  color: var(--ws-success);
+}
+
+.wispay-appr-pill[data-state="pending"] {
+  background: color-mix(in srgb, var(--ws-warn) 14%, var(--ws-surface));
+  border-color: transparent;
+  color: var(--ws-warn);
+}
+
+.wispay-appr-pill[data-state="rejected"] {
+  background: color-mix(in srgb, var(--ws-danger) 14%, var(--ws-surface));
+  border-color: transparent;
+  color: var(--ws-danger);
+}
+
+.wispay-appr-pill[data-state="returned"] {
+  background: color-mix(in srgb, var(--ws-warn) 14%, var(--ws-surface));
+  border-color: transparent;
+  color: var(--ws-warn);
+}
+
+/* Table contract (DESIGN.md 6.3): subtle header, hover tint, 48px rows. */
+.wispay-appr-table-wrap th {
+  background: color-mix(in srgb, var(--ws-fg) 4%, var(--ws-surface));
+  font-weight: 500;
+}
+
+.wispay-appr-table-wrap td {
+  padding: 12px 16px;
+}
+
+.wispay-appr-table-wrap tbody tr {
+  height: 48px;
+}
+
+.wispay-appr-table-wrap tbody tr:hover td {
+  background: color-mix(in srgb, var(--ws-accent) 6%, var(--ws-surface));
+}
