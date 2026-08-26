@@ -67,14 +67,10 @@ def stores(*, ensure_tables: bool = True) -> Stores:
     """
 
     global _cached, _cached_conn
-    if _cached is not None and _cached_conn is not None and _connection_alive(
-        _cached_conn
-    ):
+    if _cached is not None and _cached_conn is not None and _connection_alive(_cached_conn):
         return _cached
     with _lock:
-        if _cached is not None and _cached_conn is not None and _connection_alive(
-            _cached_conn
-        ):
+        if _cached is not None and _cached_conn is not None and _connection_alive(_cached_conn):
             return _cached
         if _cached_conn is not None:
             with contextlib.suppress(Exception):

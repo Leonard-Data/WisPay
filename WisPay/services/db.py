@@ -148,12 +148,9 @@ def connection_string() -> str:
     missing = [name for name, value in values.items() if not value]
     if missing:
         hint = (
-            "Copy .env.example to .env and fill the AZURE_SQL_* values "
-            "(see AGENTS.md quick start)."
+            "Copy .env.example to .env and fill the AZURE_SQL_* values (see AGENTS.md quick start)."
         )
-        raise RuntimeError(
-            f"Missing Azure SQL environment variables: {', '.join(missing)}. {hint}"
-        )
+        raise RuntimeError(f"Missing Azure SQL environment variables: {', '.join(missing)}. {hint}")
     driver = os.getenv("AZURE_SQL_DRIVER", _DRIVER_DEFAULT)
     encrypt = os.getenv("AZURE_SQL_ENCRYPT", "yes")
     trust_cert = os.getenv("AZURE_SQL_TRUST_SERVER_CERTIFICATE", "no")

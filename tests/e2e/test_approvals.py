@@ -116,7 +116,9 @@ def test_approvals_route_decide_and_timeline(page: Page, base_url: str) -> None:
     page.fill(".wispay-appr-route-input", number)
     expect(page.locator(".wispay-appr-route-input")).to_have_value(number, timeout=20_000)
     page.get_by_role("button", name="Generate approval route").click()
-    expect(page.locator(".wispay-appr-status")).to_contain_text("generated with 2 step", timeout=20_000)
+    expect(page.locator(".wispay-appr-status")).to_contain_text(
+        "generated with 2 step", timeout=20_000
+    )
 
     # The Line Manager step must appear for the Line Manager sample actor.
     row = page.locator("tbody tr").filter(has_text=number)

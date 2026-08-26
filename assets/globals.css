@@ -236,3 +236,32 @@
         transition: none !important;
     }
 }
+
+/* Auth session surfaces (navbar chip, sign-in link, sign-out control). */
+.wispay-navbar-user-email {
+    font-family: var(--ws-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--ws-muted);
+}
+
+.wispay-navbar-signin {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 var(--ws-space-4);
+    border-radius: var(--ws-radius-pill);
+    font-size: 13px;
+    color: var(--ws-fg-2);
+    text-decoration: none;
+}
+
+.wispay-navbar-signin:hover {
+    background: var(--ws-surface);
+    color: var(--ws-fg);
+}
+
+.wispay-navbar-signout {
+    min-height: 34px;
+    font-size: 12px;
+}
