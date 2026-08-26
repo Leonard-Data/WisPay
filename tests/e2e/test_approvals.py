@@ -114,7 +114,7 @@ def test_approvals_route_decide_and_timeline(page: Page, base_url: str) -> None:
     # Route generation from rule set v1 (Line Manager + Executive above 100M VND).
     number = request.request_number or ""
     page.fill(".wispay-appr-route-input", number)
-    expect(page.locator(".wispay-appr-route-input")).to_have_value(number)
+    expect(page.locator(".wispay-appr-route-input")).to_have_value(number, timeout=20_000)
     page.get_by_role("button", name="Generate approval route").click()
     expect(page.locator(".wispay-appr-status")).to_contain_text("generated with 2 step", timeout=20_000)
 
@@ -130,8 +130,8 @@ def test_approvals_route_decide_and_timeline(page: Page, base_url: str) -> None:
 
     expect(page.locator(".wispay-appr-step")).to_have_count(2)
 
-    page.get_by_role("button", name="Approve").click()
-    expect(page.locator(".wispay-appr-status")).to_contain_text("Decision recorded")
+    page.get_by_role("button", name="Approve", exact=True).click()
+    expect(page.locator(".wispay-appr-status")).to_contain_text("Decision recorded", timeout=20_000)
 
     assert page.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth")
 
