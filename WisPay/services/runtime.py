@@ -10,6 +10,7 @@ Azure SQL (and intermediate firewalls) forcibly close idle connections
 
 from __future__ import annotations
 
+import contextlib
 import threading
 from typing import TYPE_CHECKING
 
@@ -76,10 +77,8 @@ def stores(*, ensure_tables: bool = True) -> Stores:
         ):
             return _cached
         if _cached_conn is not None:
-            try:
+            with contextlib.suppress(Exception):
                 _cached_conn.close()
-            except Exception:
-                pass
         conn = connect()
         _cached = sql_stores(conn, ensure_tables=ensure_tables)
         _cached_conn = conn
@@ -92,9 +91,7 @@ def reset_stores() -> None:
     global _cached, _cached_conn
     with _lock:
         if _cached_conn is not None:
-            try:
+            with contextlib.suppress(Exception):
                 _cached_conn.close()
-            except Exception:
-                pass
         _cached = None
         _cached_conn = None
