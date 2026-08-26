@@ -229,6 +229,8 @@ class approvals_state(rx.State):
 
     def _select(self, key: str) -> None:
         """Load the selected decision into the panel and its route timeline."""
+
+        self.selected_key = key
         try:
             bundle = stores()
         except RuntimeError as error:
