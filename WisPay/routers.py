@@ -5,9 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from states.request_tracking import request_tracking_state
 from WisPay.pages import (
     dashboard_page,
     not_found_page,
+    request_detail_page,
     request_new_page,
     requests_page,
     server_error_page,
@@ -28,6 +30,7 @@ class Route:
     route: str
     title: str
     description: str
+    on_load: tuple[object, ...] | None = None
 
 
 ROUTES: tuple[Route, ...] = (
@@ -42,12 +45,20 @@ ROUTES: tuple[Route, ...] = (
         route="/requests",
         title="Payment Requests · WisPay",
         description="Review and track Payment Requests in WisPay.",
+        on_load=(request_tracking_state.refresh_queue,),
     ),
     Route(
         page=request_new_page,
         route="/requests/new",
         title="New Payment Request · WisPay",
         description="Create and submit a Vendor or Employee Payment Request.",
+    ),
+    Route(
+        page=request_detail_page,
+        route="/requests/[number]",
+        title="Payment Request Detail · WisPay",
+        description="Track one Payment Request through review and approval.",
+        on_load=(request_tracking_state.load_detail,),
     ),
     Route(
         page=not_found_page,
@@ -78,4 +89,5 @@ def register_routes(app: rx.App) -> None:
             route=route.route,
             title=route.title,
             description=route.description,
+            on_load=route.on_load,
         )
