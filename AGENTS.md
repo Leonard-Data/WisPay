@@ -70,7 +70,7 @@ For every change under `WisPay/models/`:
 
 ## UI and component source rules
 
-For every new or changed UI component, page, layout, or interaction:
+For every new or changed UI component, page, layout, or interaction. Reusable components go in `WisPay/components/` — documented, page-agnostic, composed by pages; placement and documentation rules: [CONVENTIONS.md → Components](CONVENTIONS.md#components):
 
 1. Read `DESIGN.md` before coding and use its source-backed tokens, spacing, typography, layout, accessibility, content, and responsive rules.
 2. Fetch `https://buridan-ui.reflex.run/llms.txt` before selecting or implementing the component. Follow the current Buridan UI Reflex guidance and link the relevant component documentation in the work notes or PR description.

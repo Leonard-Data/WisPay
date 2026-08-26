@@ -24,21 +24,29 @@ Authoritative for all code in this repo. Domain terms and security invariants co
 WisPay/                 # application package (app_name = "WisPay")
   __init__.py
   WisPay.py             # app entrypoint (rx.App, page registration)
-  states/                # rx.State subclasses (one concern per file)
+  components/           # reusable rx components (documented, page-agnostic)
+  layout/               # page shells and structural wrappers (shell(), nav frame)
   models/               # Pydantic domain models (mirror CONTEXT.md terms)
-  components/           # reusable rx components
-  pages/                # page components
+  pages/                # page components: thin composition of components/
   services/             # Azure DI, Azure SQL, business logic (pure, testable)
-tests/                  # mirrors package layout; test_*.py
-scripts/                # tooling (validate.sh)
-.scratch/               # feature specs (issues live on GitHub)
+states/                  # rx.State subclasses (one concern per file)
+tests/                   # mirrors package layout; test_*.py
+scripts/                 # tooling (validate.sh)
+.scratch/                # feature specs (issues live on GitHub)
 ```
 
-Keep business logic **out** of components and pages — put it in `services/` so it is unit-testable.
+## Components
+
+Components live in `WisPay/components/`; pages compose them and add only page-specific markup.
+
+- **Placement**: a component a second page could use goes in `components/` — form fields, summary rows, status pills, cards, table shells. A helper used by one page stays in that page file; promote it the moment a second consumer appears.
+- **Reusable by construction**: components take data and event handlers as arguments, pass `class_name` through to callers, and take visual values from `WisPay/styles.py` tokens. Page copy, routes, and state wiring stay in the page.
+- **Documented**: every public component function has a docstring stating what it renders, its arguments, and one usage line; the module docstring names the component family it covers.
+- **Readable**: one concept per component, names that say what renders (`invoice_status_pill`, not `widget2`), section comments in longer files.
+- Pages stay thin: composition and layout only; business logic belongs in `services/`.
 
 ## Reflex conventions
-
-- One `rx.State` concern per file in `state/`. State holds data; events mutate it.
+- One `rx.State` concern per file in `states/`. State holds data; events mutate it.
 - Use `rx.Var` for derived values; never compute in render functions.
 - Event handlers return or yield `rx` events — no side effects outside handlers.
 - Components are pure functions returning `rx.Component`. No business logic, no I/O.
