@@ -90,7 +90,7 @@ def _actor_switcher() -> rx.Component:
     )
 
 
-def _queue_row(row: QueueRow) -> rx.Component:
+def _queue_row(row: QueueRow, index: int) -> rx.Component:
     """Render one pending decision row."""
     return rx.el.tr(
         rx.el.td(rx.el.span(row.request_number, class_name="wispay-mono")),
@@ -107,7 +107,7 @@ def _queue_row(row: QueueRow) -> rx.Component:
         rx.el.td(
             rx.el.button(
                 "Review & decide",
-                on_click=lambda: approvals_state.select_row(row.key),  # type: ignore[operator]
+                on_click=lambda: approvals_state.select_row_at(index),  # type: ignore[operator]
                 class_name="wispay-button wispay-appr-row-action",
                 type="button",
             )
@@ -138,7 +138,7 @@ def _queue_table() -> rx.Component:
                         )
                     ),
                     rx.el.tbody(
-                        rx.foreach(approvals_state.queue_rows, _queue_row),
+                        rx.foreach(approvals_state.queue_rows, _queue_row),  # type: ignore[misc,attr-defined]
                     ),
                 ),
                 class_name="wispay-appr-table-wrap",

@@ -215,6 +215,14 @@ class approvals_state(rx.State):
         self._refresh_queue()
 
     @rx.event
+    def select_row_at(self, index: int) -> None:
+        """Event wrapper: select by queue position (foreach indexes are plain
+        ints, which Reflex delivers reliably as event args)."""
+
+        row = self.queue_rows[index]
+        self._select(row.key)
+
+    @rx.event
     def select_row(self, key: str) -> None:
         """Event wrapper: load the selection and its route timeline."""
         self._select(key)
