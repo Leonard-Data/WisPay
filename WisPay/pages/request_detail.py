@@ -175,29 +175,27 @@ def _tab_bar() -> rx.Component:
     """Tab strip bound to the local UI state."""
 
     return rx.el.div(
-        rx.el.div(
-            role="tablist",
-            children=[
-                rx.el.button(
-                    name,
-                    type="button",
-                    role="tab",
-                    aria_selected=rx.cond(
-                        request_detail_ui_state.selected_tab == name,
-                        "true",
-                        "false",
-                    ),
-                    on_click=request_detail_ui_state.select_tab(name),  # type: ignore[operator]
-                    class_name=rx.cond(
-                        request_detail_ui_state.selected_tab == name,
-                        "wispay-detail-tab is-active",
-                        "wispay-detail-tab",
-                    ),
-                    key=f"tab-{name}",
-                )
-                for name in _TABS
-            ],
-        ),
+        *[
+            rx.el.button(
+                name,
+                type="button",
+                role="tab",
+                aria_selected=rx.cond(
+                    request_detail_ui_state.selected_tab == name,
+                    "true",
+                    "false",
+                ),
+                on_click=request_detail_ui_state.select_tab(name),  # type: ignore[operator]
+                class_name=rx.cond(
+                    request_detail_ui_state.selected_tab == name,
+                    "wispay-detail-tab is-active",
+                    "wispay-detail-tab",
+                ),
+                key=f"tab-{name}",
+            )
+            for name in _TABS
+        ],
+        role="tablist",
         id="d-tabs",
         class_name="wispay-detail-tabs",
     )

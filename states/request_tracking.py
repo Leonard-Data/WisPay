@@ -35,6 +35,7 @@ from WisPay.services.request_query import (
     events_for_request,
     format_money,
     get_request,
+    is_overdue,
     queue_rows,
 )
 
@@ -330,9 +331,7 @@ class request_tracking_state(rx.State):
             "purpose": purpose or "\u2014",
             "state": state.value,
             "tone": _TONE_BY_STATE[state],
-            "overdue": "Overdue"
-            if getattr(details, "due_date", None) is not None and type_label == "Vendor"
-            else "",
+            "overdue": "Overdue" if is_overdue(request, today=date.today()) else "",
             "breadcrumb_meta": (
                 f"{type_label} \u00b7 {subtype.value}" if subtype is not None else type_label
             ),

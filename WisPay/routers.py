@@ -30,7 +30,7 @@ class Route:
     route: str
     title: str
     description: str
-    on_load: tuple[object, ...] | None = None
+    on_load: object | None = None
 
 
 ROUTES: tuple[Route, ...] = (
@@ -45,7 +45,7 @@ ROUTES: tuple[Route, ...] = (
         route="/requests",
         title="Payment Requests · WisPay",
         description="Review and track Payment Requests in WisPay.",
-        on_load=(request_tracking_state.refresh_queue,),
+        on_load=request_tracking_state.refresh_queue,
     ),
     Route(
         page=request_new_page,
@@ -58,7 +58,7 @@ ROUTES: tuple[Route, ...] = (
         route="/requests/[number]",
         title="Payment Request Detail · WisPay",
         description="Track one Payment Request through review and approval.",
-        on_load=(request_tracking_state.load_detail,),
+        on_load=request_tracking_state.load_detail,
     ),
     Route(
         page=not_found_page,

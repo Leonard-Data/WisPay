@@ -2180,3 +2180,15 @@
     gap: 2px;
   }
 }
+
+@media (max-width: 640px) {
+  .wispay-detail-stepper {
+    overflow-x: auto;
+    padding-bottom: var(--ws-space-2);
+  }
+
+  .wispay-detail-step {
+    flex: 0 0 auto;
+    min-width: 92px;
+  }
+}
