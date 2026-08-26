@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import reflex as rx
 
+from states.auth_state import AuthState
 from states.base_state import BaseState
 
 
@@ -57,10 +58,31 @@ def navbar(page_title: str, section: str = "Workspace") -> rx.Component:
                 title="Toggle light and dark mode",
                 class_name="wispay-icon-button",
             ),
-            rx.box(
-                rx.box("WP", class_name="wispay-navbar-avatar"),
-                rx.text("Workspace", class_name="wispay-navbar-workspace"),
-                class_name="wispay-navbar-session",
+            rx.cond(
+                AuthState.is_authenticated,
+                rx.box(
+                    rx.box("WP", class_name="wispay-navbar-avatar"),
+                    rx.vstack(
+                        rx.text(AuthState.current_user_name, class_name="wispay-navbar-workspace"),
+                        rx.text(
+                            AuthState.current_user_email, class_name="wispay-navbar-user-email"
+                        ),
+                        align_items="start",
+                        spacing="0",
+                    ),
+                    title=AuthState.current_roles_label,
+                    class_name="wispay-navbar-session",
+                ),
+                rx.link("Sign in", href="/login", class_name="wispay-navbar-signin"),
+            ),
+            rx.cond(
+                AuthState.is_authenticated,
+                rx.button(
+                    "Sign out",
+                    aria_label="Sign out of WisPay",
+                    class_name="wispay-button wispay-new-button-ghost wispay-navbar-signout",
+                    on_click=AuthState.initiate_logout,
+                ),
             ),
             class_name="wispay-navbar-actions",
         ),

@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "azure-ai-documentintelligence>=1.0.2",
+    "msal>=1.32",
     "pydantic>=2.13.4",
     "pyodbc>=5.3.0",
     "python-dotenv>=1.2.3",
@@ -79,7 +80,7 @@ module = ["scripts.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["pyodbc"]
+module = ["pyodbc", "msal"]
 ignore_missing_imports = true
 
 # --------------------------------------------------------------------------- #

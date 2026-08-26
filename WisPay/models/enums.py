@@ -177,3 +177,6 @@ class AuditAction(StrEnum):
     EXPORTED = "Exported"
     AUTHORIZATION_DENIED = "Authorization Denied"
     CONFIGURATION_CHANGED = "Configuration Changed"
+    SIGNED_IN = "Signed In"
+    SIGN_IN_FAILED = "Sign-in Failed"
+    SIGNED_OUT = "Signed Out"

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import reflex as rx
 
+from states.auth_state import AuthState
 
-class BaseState(rx.State):
-    """State for shell-level interactions that are independent of a page."""
 
+class BaseState(AuthState):
     sidebar_open: bool = False
     is_collapsed: bool = False
     workspace_group_open: bool = True
