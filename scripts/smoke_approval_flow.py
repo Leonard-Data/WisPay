@@ -38,12 +38,12 @@ from WisPay.models import (  # noqa: E402
 )
 from WisPay.models.enums import (  # noqa: E402
     AccessClassification,
+    ApprovalDecision,  # noqa: E402
     AuditAction,
     BeneficiaryType,
     BudgetResult,
     OpexCapexClassification,
 )
-from WisPay.models.enums import ApprovalDecision  # noqa: E402
 from WisPay.services import approval_workflow  # noqa: E402
 from WisPay.services.db import connect, ensure_schema  # noqa: E402
 from WisPay.services.reference_data import RETENTION_POLICY_ID_PROTOTYPE  # noqa: E402

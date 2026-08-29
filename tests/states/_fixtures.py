@@ -17,9 +17,9 @@ from WisPay.models import (
     UserSnapshot,
     VendorPaymentDetails,
 )
+from WisPay.models.enums import OpexCapexClassification
 from WisPay.services.request_query import RequestQueueRow
 from WisPay.services.workflow_rules import SAMPLE_APPROVER_LINE_MANAGER, WorkflowRule
-from WisPay.models.enums import OpexCapexClassification
 
 
 def make_money(amount: str = "10000000", currency: str = "VND") -> Money:
