@@ -21,7 +21,7 @@
       "provider": "openrouter",
       "model": "poolside/laguna-s-2.1:free",
       "joinedAt": 1787966364045,
-      "status": "idle"
+      "status": "working"
     },
     {
       "id": "a4c86ef1-fe7e-4ea2-b8a4-5c25eb0fd886",
