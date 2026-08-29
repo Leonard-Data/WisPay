@@ -1,3 +1,18 @@
+"""Reflex configuration for the WisPay application.
+
+Driver selection (BE-1):
+
+- ``WS_DB_URL`` is the canonical knob. When set, it is forwarded to Reflex.
+- When unset and ``AZURE_SQL_*`` env vars are populated, the legacy Azure SQL
+  assembly is used (production).
+- When neither is present, the dev default ``sqlite:///wispay.db`` is used
+  so a fresh checkout can ``uv run reflex run`` without configuring a database.
+
+Secrets stay in ``.env`` only (CONVENTIONS.md security rules).
+"""
+
+from __future__ import annotations
+
 import os
 
 import reflex as rx
@@ -6,25 +21,36 @@ from reflex.plugins.shared_tailwind import TailwindConfig
 
 load_dotenv()
 
-required = {
-    "AZURE_SQL_SERVER": os.getenv("AZURE_SQL_SERVER"),
-    "AZURE_SQL_DATABASE": os.getenv("AZURE_SQL_DATABASE"),
-    "AZURE_SQL_USERNAME": os.getenv("AZURE_SQL_USERNAME"),
-    "AZURE_SQL_PASSWORD": os.getenv("AZURE_SQL_PASSWORD"),
-}
-# Construct the Azure SQL Server connection string
-# Encrypt=yes and TrustServerCertificate=no are required by Azure SQL
-connection_string = (
-    f"mssql+pyodbc://{required['AZURE_SQL_USERNAME']}:{required['AZURE_SQL_PASSWORD']}@{required['AZURE_SQL_SERVER']}.database.windows.net/{required['AZURE_SQL_DATABASE']}"
-    "?driver=ODBC+Driver+18+for+SQL+Server"
-    "&Encrypt=yes"
-    "&TrustServerCertificate=no"
-    "&Connection+Timeout=30"
-)
+
+def _resolve_db_url() -> str:
+    """Resolve the effective DB URL for Reflex (SQLAlchemy-style)."""
+    explicit = os.getenv("WS_DB_URL")
+    if explicit:
+        return explicit
+    # Azure SQL is the production path: when both server and database env vars
+    # are present, assemble the legacy connection string. The required ODBC
+    # driver is an optional extra (`uv sync --extra azure`).
+    if os.getenv("AZURE_SQL_SERVER") and os.getenv("AZURE_SQL_DATABASE"):
+        username = os.getenv("AZURE_SQL_USERNAME", "")
+        password = os.getenv("AZURE_SQL_PASSWORD", "")
+        server = os.getenv("AZURE_SQL_SERVER", "").removeprefix("tcp:")
+        database = os.getenv("AZURE_SQL_DATABASE", "")
+        return (
+            f"mssql+pyodbc://{username}:{password}"
+            f"@{server}.database.windows.net/{database}"
+            "?driver=ODBC+Driver+18+for+SQL+Server"
+            "&Encrypt=yes"
+            "&TrustServerCertificate=no"
+            "&Connection+Timeout=30"
+        )
+    return "sqlite:///wispay.db"
+
+
+db_url = _resolve_db_url()
 
 config = rx.Config(
     app_name="WisPay",
-    db_url=connection_string,
+    db_url=db_url,
     show_built_with_reflex=False,
     plugins=[
         rx.plugins.RadixThemesPlugin(

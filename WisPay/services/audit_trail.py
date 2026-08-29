@@ -69,11 +69,14 @@ class InMemoryAuditTrail:
         new_value: str | None = None,
         correlation_id: str,
         retention_policy_id: UUID,
+        reason: str | None = None,
     ) -> AuditEvent:
         """Construct, chain, and store a new ``AuditEvent``.
 
         ``new_value`` is the canonical-JSON string of the entity state after
         the action; when supplied it is wrapped in an :class:`AuditValueSnapshot`.
+        ``reason`` is required by the AuditEvent model for the consequential
+        actions listed in :data:`AuditEvent._REASON_REQUIRED_ACTIONS`.
         """
 
         previous_hash = self._events[-1].event_hash if self._events else GENESIS_HASH
@@ -101,6 +104,7 @@ class InMemoryAuditTrail:
             action=action,
             occurred_at=occurred_at,
             new_value=new_value_snapshot,
+            reason=reason,
             correlation_id=correlation_id,
             previous_hash=previous_hash,
             event_hash=event_hash,

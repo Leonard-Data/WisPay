@@ -105,3 +105,20 @@ IF NOT EXISTS (
 )
 CREATE INDEX IX_wispay_audit_event_correlation
     ON dbo.wispay_audit_event (correlation_id, sequence);
+
+IF OBJECT_ID(N'dbo.wispay_payment_record', N'U') IS NULL
+CREATE TABLE dbo.wispay_payment_record (
+    payment_record_id UNIQUEIDENTIFIER NOT NULL
+        CONSTRAINT PK_wispay_payment_record PRIMARY KEY,
+    request_id UNIQUEIDENTIFIER NOT NULL,
+    recorded_at_utc VARCHAR(35) NOT NULL,
+    payload NVARCHAR(MAX) NOT NULL
+);
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = N'IX_wispay_payment_record_request'
+      AND object_id = OBJECT_ID(N'dbo.wispay_payment_record')
+)
+CREATE INDEX IX_wispay_payment_record_request
+    ON dbo.wispay_payment_record (request_id, recorded_at_utc);

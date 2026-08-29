@@ -51,6 +51,14 @@ class Tokens:
     MOTION_FAST: ClassVar[str] = "var(--ws-motion-fast)"
     MOTION_BASE: ClassVar[str] = "var(--ws-motion-base)"
 
+    # Waveform amount strip (DESIGN.md §3).
+    WAVE_BAR_HEIGHT_BASE: ClassVar[str] = "18px"
+    WAVE_BAR_HEIGHT_STEP: ClassVar[str] = "2px"
+    WAVE_BAR_COLOR: ClassVar[str] = "var(--ws-fg)"
+    WAVE_BAR_COLOR_INACTIVE: ClassVar[str] = (
+        "color-mix(in srgb, var(--ws-fg) 18%, var(--ws-surface))"
+    )
+
 
 class Animations:
     """Animation and transition values backed by global keyframes."""

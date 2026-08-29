@@ -13,7 +13,12 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 if TYPE_CHECKING:
     from uuid import UUID
 
-    from WisPay.models import AuditEvent, PaymentRequest, WorkflowInstance
+    from WisPay.models import (
+        AuditEvent,
+        PaymentRecord,
+        PaymentRequest,
+        WorkflowInstance,
+    )
     from WisPay.services.workflow_rules import WorkflowRule
 
 
@@ -31,6 +36,10 @@ class RequestStore(Protocol):
 
     def get_by_number(self, request_number: str) -> PaymentRequest | None:
         """Return the aggregate with this immutable request number or ``None``."""
+        ...
+
+    def list_all(self) -> tuple[PaymentRequest, ...]:
+        """Return every persisted request, ordered by ``created_at`` ascending."""
         ...
 
 
@@ -73,6 +82,23 @@ class AuditEventStore(Protocol):
 
 
 @runtime_checkable
+class PaymentRecordStore(Protocol):
+    """Append-only persistence for :class:`PaymentRecord` aggregates.
+
+    CONTEXT.md invariant 10 forbids hard-deletes of submitted financial
+    records; this protocol exposes ``save`` (insert) and read methods only.
+    """
+
+    def save(self, record: PaymentRecord) -> None:
+        """Insert a new payment record; updates are not exposed."""
+        ...
+
+    def for_request(self, request_id: UUID) -> tuple[PaymentRecord, ...]:
+        """Return payment records for one request, oldest first."""
+        ...
+
+
+@runtime_checkable
 class RuleStore(Protocol):
     """Versioned approval-route configuration rows."""
 
@@ -92,4 +118,5 @@ class Stores:
     requests: RequestStore
     workflows: WorkflowStore
     audit: AuditEventStore
+    payments: PaymentRecordStore
     rules: RuleStore

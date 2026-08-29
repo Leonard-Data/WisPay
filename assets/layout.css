@@ -2524,3 +2524,685 @@
 .wispay-appr-table-wrap tbody tr:hover td {
   background: color-mix(in srgb, var(--ws-accent) 6%, var(--ws-surface));
 }
+
+/* --- Reusable component library (WisPay/components) ------------------------ */
+/* These styles back the typed component primitives in
+   WisPay/components/{cards,status_pill,banner,lifecycle_stepper,tabs,table,
+   empty_state,toast,waveform_amount_strip,navigation/mobile_bar}.py.
+   They use only design tokens defined in assets/design-tokens.css. */
+
+/* Cards: the .wispay-card family is the existing shell; .wispay-card-title
+   provides an opt-in centered title block used by card_with_heading. */
+.wispay-card-title {
+  display: block;
+  font-family: var(--ws-font-display);
+  font-size: var(--ws-text-lg);
+  font-weight: 300;
+  line-height: var(--ws-leading-tight);
+  letter-spacing: var(--ws-tracking-display);
+  color: var(--ws-fg);
+  margin: 0;
+}
+
+/* Status pills: existing .wispay-pill already supports tone-neutral/ok/warn/
+   danger/info/accent. The flag chip family stays restrained. */
+.wispay-flagchip.danger {
+  background: color-mix(in srgb, var(--ws-danger) 10%, var(--ws-surface));
+  color: var(--ws-danger);
+}
+
+.wispay-flagchip.info {
+  background: color-mix(in srgb, var(--ws-accent) 8%, var(--ws-surface));
+  color: var(--ws-accent);
+}
+
+.wispay-flagchip.ok {
+  background: color-mix(in srgb, var(--ws-success) 10%, var(--ws-surface));
+  color: var(--ws-success);
+}
+
+/* Banners: full-width message rows with a short strong lead plus body copy. */
+.wispay-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-1);
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--ws-radius-md);
+  border: 1px solid transparent;
+}
+
+.wispay-banner-lead {
+  margin: 0;
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wispay-banner-copy {
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-banner.tone-info {
+  background: color-mix(in srgb, var(--ws-accent) 6%, var(--ws-bg));
+  border-color: color-mix(in srgb, var(--ws-accent) 30%, transparent);
+}
+
+.wispay-banner.tone-info .wispay-banner-lead {
+  color: var(--ws-accent);
+}
+
+.wispay-banner.tone-success {
+  background: color-mix(in srgb, var(--ws-success) 8%, var(--ws-bg));
+  border-color: color-mix(in srgb, var(--ws-success) 30%, transparent);
+}
+
+.wispay-banner.tone-success .wispay-banner-lead {
+  color: var(--ws-success);
+}
+
+.wispay-banner.tone-warning {
+  background: color-mix(in srgb, var(--ws-warn) 10%, var(--ws-bg));
+  border-color: color-mix(in srgb, var(--ws-warn) 35%, transparent);
+}
+
+.wispay-banner.tone-warning .wispay-banner-lead {
+  color: var(--ws-warn);
+}
+
+.wispay-banner.tone-danger {
+  background: color-mix(in srgb, var(--ws-danger) 8%, var(--ws-bg));
+  border-color: color-mix(in srgb, var(--ws-danger) 35%, transparent);
+}
+
+.wispay-banner.tone-danger .wispay-banner-lead {
+  color: var(--ws-danger);
+}
+
+/* Lifecycle stepper timestamps under completed nodes. */
+.wispay-detail-step-time {
+  display: block;
+  font-family: var(--ws-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ws-muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.wispay-detail-step.is-branch .wispay-detail-step-dot {
+  background: color-mix(in srgb, var(--ws-danger) 14%, var(--ws-bg));
+  color: var(--ws-danger);
+  border-color: var(--ws-danger);
+}
+
+/* Tabs: a single horizontal row with a bottom rule per DESIGN.md#Tabs. */
+.wispay-tabs {
+  display: flex;
+  width: 100%;
+  gap: var(--ws-space-1);
+  border-bottom: 1px solid var(--ws-border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.wispay-tabs-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 var(--ws-space-3);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ws-fg-2);
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--ws-motion-fast) var(--ws-ease-standard),
+    color var(--ws-motion-fast) var(--ws-ease-standard);
+}
+
+.wispay-tabs-item:hover {
+  background: var(--ws-surface);
+  color: var(--ws-fg);
+}
+
+.wispay-tabs-item.is-active {
+  color: var(--ws-fg);
+  border-bottom-color: var(--ws-fg);
+}
+
+.wispay-tabs-item.is-compact {
+  min-height: 30px;
+  font-size: 12px;
+  padding: 0 var(--ws-space-2);
+}
+
+.wispay-tabs-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--ws-radius-pill);
+  background: var(--ws-surface);
+  color: var(--ws-fg-2);
+  font-family: var(--ws-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.wispay-tabs-item.is-active .wispay-tabs-count {
+  background: var(--ws-fg);
+  color: var(--ws-bg);
+}
+
+/* Data table: numeric and right-aligned cell helpers. */
+.wispay-queue-cell.is-right,
+.wispay-queue-cell.is-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--ws-font-mono);
+  font-size: 12px;
+}
+
+.wispay-queue-th[data_align="right"] {
+  text-align: right;
+}
+
+/* Mobile-card fallback for the data table: rendered only on small screens. */
+.wispay-mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: var(--ws-space-3);
+}
+
+@media (max-width: 768px) {
+  .wispay-queue-card {
+    display: none;
+  }
+
+  .wispay-mobile-cards {
+    display: flex;
+  }
+}
+
+/* Empty, loading, error states. */
+.wispay-empty-icon {
+  color: var(--ws-muted);
+  margin-bottom: var(--ws-space-2);
+}
+
+.wispay-skeleton {
+  display: block;
+  width: 100%;
+  height: 14px;
+  border-radius: var(--ws-radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--ws-surface) 0%,
+    color-mix(in srgb, var(--ws-fg) 6%, var(--ws-surface)) 50%,
+    var(--ws-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: wispay-shimmer 1.1s linear infinite;
+}
+
+.wispay-skeleton.is-short {
+  width: 40%;
+}
+
+.wispay-skeleton.is-medium {
+  width: 70%;
+}
+
+.wispay-skeleton-line {
+  margin-bottom: var(--ws-space-2);
+}
+
+.wispay-skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-2);
+  padding: var(--ws-space-5);
+}
+
+.wispay-error-state-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ws-space-8) var(--ws-space-4);
+}
+
+.wispay-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ws-space-3);
+  max-width: 480px;
+  background: var(--ws-bg);
+  border: 1px solid var(--ws-border-soft);
+  border-radius: var(--ws-radius-md);
+  box-shadow: var(--ws-elev-ring);
+  padding: var(--ws-space-6);
+}
+
+.wispay-error-state-title {
+  margin: 0;
+  font-family: var(--ws-font-display);
+  font-size: var(--ws-text-xl);
+  font-weight: 300;
+  color: var(--ws-fg);
+}
+
+.wispay-error-state-copy {
+  margin: 0;
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  color: var(--ws-fg-2);
+}
+
+/* Toast: a single dark pill with a leading tone dot. */
+.wispay-toast-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+/* Mobile bar (renders below 1024px). */
+.wispay-mobile-bar {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .wispay-mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--ws-space-3);
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--ws-bg);
+    border-bottom: 1px solid var(--ws-border-soft);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .wispay-mobile-context {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wispay-mobile-section {
+    font-family: var(--ws-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ws-muted);
+  }
+
+  .wispay-mobile-title {
+    font-family: var(--ws-font-display);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ws-fg);
+  }
+
+  .wispay-mobile-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ws-space-2);
+  }
+
+  .wispay-mobile-langchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--ws-border-soft);
+    border-radius: var(--ws-radius-pill);
+    background: transparent;
+    color: var(--ws-fg-2);
+    font-family: var(--ws-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+}
+
+/* Per-page surface classes for the new product surfaces. */
+.wispay-finrev-shell,
+.wispay-payments-shell,
+.wispay-admin-shell,
+.wispay-audit-shell,
+.wispay-reports-shell,
+.wispay-dashboard-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-6);
+  padding: var(--ws-space-6) var(--ws-container-gutter-desktop);
+  max-width: var(--ws-container-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.wispay-finrev-header,
+.wispay-payments-header,
+.wispay-admin-header,
+.wispay-audit-header,
+.wispay-reports-header,
+.wispay-dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-1);
+}
+
+.wispay-finrev-kpis,
+.wispay-payments-kpis,
+.wispay-dashboard-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ws-space-4);
+}
+
+.wispay-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--ws-space-4) var(--ws-space-5);
+  background: var(--ws-bg);
+  border: 1px solid var(--ws-border-soft);
+  border-radius: var(--ws-radius-md);
+  box-shadow: var(--ws-elev-ring);
+}
+
+.wispay-kpi-label {
+  font-family: var(--ws-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ws-muted);
+}
+
+.wispay-kpi-value {
+  font-family: var(--ws-font-mono);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ws-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.wispay-kpi-meta {
+  font-family: var(--ws-font-body);
+  font-size: 12px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-finrev-grid,
+.wispay-payments-grid,
+.wispay-audit-grid,
+.wispay-reports-grid,
+.wispay-admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ws-space-5);
+}
+
+@media (min-width: 1100px) {
+  .wispay-finrev-grid,
+  .wispay-payments-grid {
+    grid-template-columns: 1.6fr 1fr;
+  }
+}
+
+.wispay-persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ws-space-3);
+}
+
+.wispay-persona-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--ws-space-4);
+  border: 1px solid var(--ws-border-soft);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg);
+}
+
+.wispay-persona-name {
+  font-family: var(--ws-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ws-fg);
+}
+
+.wispay-persona-meta {
+  font-family: var(--ws-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ws-muted);
+}
+
+.wispay-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ws-space-2);
+  align-items: center;
+}
+
+.wispay-action-row .wispay-button {
+  min-height: 38px;
+}
+
+.wispay-audit-row,
+.wispay-reports-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 120px 110px;
+  gap: var(--ws-space-3);
+  align-items: start;
+  padding: var(--ws-space-3) 0;
+  border-top: 1px solid var(--ws-border-soft);
+}
+
+.wispay-audit-row:first-child,
+.wispay-reports-row:first-child {
+  border-top: 0;
+}
+
+.wispay-audit-time,
+.wispay-reports-period {
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ws-muted);
+}
+
+.wispay-audit-action {
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ws-fg);
+}
+
+.wispay-audit-actor,
+.wispay-reports-detail {
+  font-family: var(--ws-font-body);
+  font-size: 12px;
+  color: var(--ws-fg-2);
+}
+
+.wispay-reports-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-3);
+}
+
+.wispay-reports-bar-row {
+  display: grid;
+  grid-template-columns: 1.4fr 100px 80px 60px;
+  gap: var(--ws-space-3);
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ws-border-soft);
+}
+
+.wispay-reports-bar-row:first-child {
+  border-top: 0;
+}
+
+.wispay-reports-bar-track {
+  display: block;
+  position: relative;
+  height: 8px;
+  background: var(--ws-surface);
+  border-radius: var(--ws-radius-pill);
+  overflow: hidden;
+}
+
+.wispay-reports-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--ws-fg);
+}
+
+.wispay-reports-bar-label {
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  color: var(--ws-fg);
+}
+
+.wispay-reports-bar-value {
+  font-family: var(--ws-font-mono);
+  font-size: 12px;
+  text-align: right;
+  color: var(--ws-fg-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.wispay-reports-bar-share {
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  text-align: right;
+  color: var(--ws-muted);
+}
+
+.wispay-admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-4);
+}
+
+.wispay-admin-thresholds {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 0.6fr;
+  gap: var(--ws-space-3);
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--ws-border-soft);
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+}
+
+.wispay-admin-thresholds:first-of-type {
+  border-top: 0;
+}
+
+.wispay-admin-thresholds .wispay-admin-th-label {
+  font-family: var(--ws-font-body);
+  color: var(--ws-fg);
+}
+
+.wispay-admin-thresholds .wispay-admin-th-value {
+  font-family: var(--ws-font-mono);
+  color: var(--ws-fg-2);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.wispay-admin-thresholds .wispay-admin-th-version {
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  color: var(--ws-muted);
+  text-align: right;
+}
+
+.wispay-reports-export {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ws-space-2);
+}
+
+.wispay-reports-export-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 90px;
+  gap: var(--ws-space-3);
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ws-border-soft);
+}
+
+.wispay-reports-export-row:first-of-type {
+  border-top: 0;
+}
+
+.wispay-reports-export-name {
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  color: var(--ws-fg);
+}
+
+.wispay-reports-export-meta {
+  font-family: var(--ws-font-mono);
+  font-size: 11px;
+  color: var(--ws-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+  .wispay-finrev-header,
+  .wispay-payments-header,
+  .wispay-admin-header,
+  .wispay-audit-header,
+  .wispay-reports-header,
+  .wispay-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wispay-audit-row,
+  .wispay-reports-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .wispay-reports-bar-row {
+    grid-template-columns: 1fr 80px 60px;
+  }
+
+  .wispay-admin-thresholds {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .wispay-admin-thresholds .wispay-admin-th-value,
+  .wispay-admin-thresholds .wispay-admin-th-version {
+    text-align: left;
+  }
+}

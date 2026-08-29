@@ -11,7 +11,12 @@ from WisPay.services.sql_repositories import DurableAuditTrail
 from WisPay.services.workflow_rules import SEED_RULE_VERSION, WorkflowRule
 
 if TYPE_CHECKING:
-    from WisPay.models import AuditEvent, PaymentRequest, WorkflowInstance
+    from WisPay.models import (
+        AuditEvent,
+        PaymentRecord,
+        PaymentRequest,
+        WorkflowInstance,
+    )
 
 
 class FakeRequestStore:
@@ -35,6 +40,9 @@ class FakeRequestStore:
             ),
             None,
         )
+
+    def list_all(self) -> tuple[PaymentRequest, ...]:
+        return tuple(sorted(self._by_id.values(), key=lambda req: req.created_at))
 
     def count(self) -> int:
         return len(self._by_id)
@@ -109,6 +117,22 @@ class FakeRuleStore:
         self._rules_by_version[version] = rules
 
 
+class FakePaymentRecordStore:
+    """Dictionary-backed append-only payment-record persistence."""
+
+    def __init__(self) -> None:
+        self._by_id: dict[UUID, PaymentRecord] = {}
+
+    def save(self, record: PaymentRecord) -> None:
+        # Insert-only; updates are not exposed (CONTEXT.md invariant 10).
+        self._by_id[record.payment_record_id] = record
+
+    def for_request(self, request_id: UUID) -> tuple[PaymentRecord, ...]:
+        records = [r for r in self._by_id.values() if r.request_id == request_id]
+        records.sort(key=lambda record: record.recorded_at)
+        return tuple(records)
+
+
 class FakeStores:
     """Bundle mirroring :class:`Stores` with directly accessible doubles."""
 
@@ -121,6 +145,7 @@ class FakeStores:
         self.requests = FakeRequestStore()
         self.workflows = FakeWorkflowStore()
         self.audit = FakeAuditEventStore()
+        self.payments = FakePaymentRecordStore()
         self.rules = FakeRuleStore(version=rule_version, rules=rules)
 
     @property
@@ -129,6 +154,7 @@ class FakeStores:
             requests=self.requests,
             workflows=self.workflows,
             audit=self.audit,
+            payments=self.payments,
             rules=self.rules,
         )
 

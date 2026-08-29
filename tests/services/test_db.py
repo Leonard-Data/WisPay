@@ -18,6 +18,9 @@ def _clear_sql_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "AZURE_SQL_DRIVER",
         "AZURE_SQL_ENCRYPT",
         "AZURE_SQL_TRUST_SERVER_CERTIFICATE",
+        # The dual-driver selector lives in WS_DB_URL — clear it so the
+        # Azure SQL tests in this module reach the Azure path.
+        "WS_DB_URL",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -94,6 +97,7 @@ def test_schema_statements_are_individually_guarded() -> None:
         "dbo.wispay_workflow_rule",
         "dbo.wispay_workflow_rule_version",
         "dbo.wispay_audit_event",
+        "dbo.wispay_payment_record",
     )
     joined = "\n".join(statement.lower() for statement in db.schema_statements())
     for table in expected_tables:

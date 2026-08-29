@@ -43,6 +43,7 @@ from WisPay.models.enums import (  # noqa: E402
     BudgetResult,
     OpexCapexClassification,
 )
+from WisPay.models.enums import ApprovalDecision  # noqa: E402
 from WisPay.services import approval_workflow  # noqa: E402
 from WisPay.services.db import connect, ensure_schema  # noqa: E402
 from WisPay.services.reference_data import RETENTION_POLICY_ID_PROTOTYPE  # noqa: E402
@@ -112,8 +113,8 @@ def _request() -> PaymentRequest:
     )
 
 
-def _counts(conn) -> dict[str, int]:
-    cursor = conn.cursor()
+def _counts(conn: object) -> dict[str, int]:
+    cursor = conn.cursor()  # type: ignore[attr-defined]
     counts: dict[str, int] = {}
     for table in (
         "wispay_payment_request",
@@ -137,13 +138,15 @@ def main() -> int:
     print("== ensure_schema (run 2, must be a no-op)")
     ensure_schema(conn)
     stores = sql_stores(conn, ensure_tables=False)
-    stores.rules.ensure_seeded()
+    _ensure_seeded = getattr(stores.rules, "ensure_seeded", None)
+    if _ensure_seeded is not None:
+        _ensure_seeded(version=SEED_RULE_VERSION)
     after_second = _counts(conn)
     assert after_second["wispay_workflow_rule"] >= rules_before, "rule rows vanished"
 
     request = _request()
     stores.requests.save(request)
-    stored = stores.requests.get_by_number(request.request_number)
+    stored = stores.requests.get_by_number(request.request_number or "")
     assert stored is not None and stored.request_id == request.request_id
 
     print("== generate route (frozen v1 snapshot)")
@@ -181,7 +184,7 @@ def main() -> int:
     decision = approval_workflow.DecisionCommand(
         workflow_instance_id=result.instance.workflow_instance_id,
         step_id=step_one.step_id,
-        decision="Approved",
+        decision=ApprovalDecision.APPROVED,
         actor=_actor("sample-lm-001"),
     )
     decided = approval_workflow.decide(
@@ -194,7 +197,8 @@ def main() -> int:
     stores.workflows.save_instance(decided.instance)
 
     print("== fresh-connection re-read")
-    conn.close()
+    if hasattr(conn, "close"):
+        conn.close()
     conn2 = connect()
     stores2 = sql_stores(conn2, ensure_tables=False)
     reread_request = stores2.requests.get(request.request_id)
@@ -211,11 +215,14 @@ def main() -> int:
 
     print("== structural second pass (counts must match)")
     counts_a = _counts(conn2)
-    stores2.rules.ensure_seeded()
+    _ensure_seeded = getattr(stores2.rules, "ensure_seeded", None)
+    if _ensure_seeded is not None:
+        _ensure_seeded(version=SEED_RULE_VERSION)
     counts_b = _counts(conn2)
     assert counts_a == counts_b, f"second pass mutated rows: {counts_a} -> {counts_b}"
 
-    conn2.close()
+    if hasattr(conn2, "close"):
+        conn2.close()
     print("SMOKE PASS")
     print(f"  request        {request.request_number}")
     print(f"  instance       {result.instance.workflow_instance_id} (Pending)")

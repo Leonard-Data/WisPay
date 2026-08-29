@@ -15,6 +15,7 @@ from uuid import UUID, uuid4
 from WisPay.models import (
     AuditEvent,
     AuditValueSnapshot,
+    PaymentRecord,
     PaymentRequest,
     UserSnapshot,
     WorkflowInstance,
@@ -72,6 +73,7 @@ _REQUEST_INSERT = (
 )
 _REQUEST_BY_ID = "SELECT payload FROM dbo.wispay_payment_request WHERE request_id = ?"
 _REQUEST_BY_NUMBER = "SELECT payload FROM dbo.wispay_payment_request WHERE request_number = ?"
+_REQUEST_LIST = "SELECT payload FROM dbo.wispay_payment_request ORDER BY created_at_utc ASC"
 
 
 def request_insert_params(request: PaymentRequest) -> tuple[object, ...]:
@@ -114,6 +116,15 @@ class SqlRequestStore:
 
     def get_by_number(self, request_number: str) -> PaymentRequest | None:
         return self._fetch_one(_REQUEST_BY_NUMBER, request_number)
+
+    def list_all(self) -> tuple[PaymentRequest, ...]:
+        cursor = self._conn.cursor()
+        try:
+            cursor.execute(_REQUEST_LIST)
+            rows = cursor.fetchall()
+        finally:
+            cursor.close()
+        return tuple(PaymentRequest.model_validate_json(_as_text(row[0])) for row in rows)
 
     def _fetch_one(self, query: str, param: str) -> PaymentRequest | None:
         cursor = self._conn.cursor()
@@ -503,6 +514,63 @@ class DurableAuditTrail:
 
 
 # --------------------------------------------------------------------------- #
+# Payment records
+# --------------------------------------------------------------------------- #
+
+
+_PAYMENT_RECORD_INSERT = (
+    "INSERT INTO dbo.wispay_payment_record "
+    "(payment_record_id, request_id, recorded_at_utc, payload) "
+    "VALUES (?, ?, ?, ?)"
+)
+_PAYMENT_RECORD_FOR_REQUEST = (
+    "SELECT payload FROM dbo.wispay_payment_record "
+    "WHERE request_id = ? ORDER BY recorded_at_utc ASC"
+)
+
+
+def payment_record_insert_params(record: PaymentRecord) -> tuple[object, ...]:
+    """Pure parameter builder for ``_PAYMENT_RECORD_INSERT``."""
+    return (
+        str(record.payment_record_id),
+        str(record.request_id),
+        utc_iso(record.recorded_at),
+        record.model_dump_json(),
+    )
+
+
+class SqlPaymentRecordStore:
+    """Append-only payment-record persistence (Azure SQL).
+
+    CONTEXT.md invariant 10: no hard-deletes. The store exposes ``save``
+    (insert) plus ``for_request`` (read) only. The ``payment_record_id`` PK
+    guarantees idempotent inserts on retry; duplicate-key collisions surface
+    to callers so the upstream service can fail loudly rather than silently
+    overwrite a recorded payment.
+    """
+
+    def __init__(self, conn: pyodbc.Connection) -> None:
+        self._conn = conn
+
+    def save(self, record: PaymentRecord) -> None:
+        cursor = self._conn.cursor()
+        try:
+            cursor.execute(_PAYMENT_RECORD_INSERT, payment_record_insert_params(record))
+        finally:
+            cursor.close()
+        self._conn.commit()
+
+    def for_request(self, request_id: UUID) -> tuple[PaymentRecord, ...]:
+        cursor = self._conn.cursor()
+        try:
+            cursor.execute(_PAYMENT_RECORD_FOR_REQUEST, str(request_id))
+            rows = cursor.fetchall()
+        finally:
+            cursor.close()
+        return tuple(PaymentRecord.model_validate_json(_as_text(row[0])) for row in rows)
+
+
+# --------------------------------------------------------------------------- #
 # Bundle
 # --------------------------------------------------------------------------- #
 
@@ -517,5 +585,6 @@ def sql_stores(conn: pyodbc.Connection, *, ensure_tables: bool = True) -> Stores
         requests=SqlRequestStore(conn),
         workflows=SqlWorkflowStore(conn),
         audit=SqlAuditEventStore(conn),
+        payments=SqlPaymentRecordStore(conn),
         rules=rules,
     )
