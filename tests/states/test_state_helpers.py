@@ -156,9 +156,7 @@ def test_bucket_rows_filters_by_lifecycle_state() -> None:
 def test_bucket_rows_empty_when_no_matches() -> None:
     from states.finance_review_state import _bucket_rows
 
-    models = (
-        make_vendor_request(state=LifecycleState.APPROVED, number="WPR-001"),
-    )
+    models = (make_vendor_request(state=LifecycleState.APPROVED, number="WPR-001"),)
     assert _bucket_rows(models, LifecycleState.BUDGET_REVIEW) == []
 
 
@@ -166,9 +164,7 @@ def test_bucket_rows_uses_em_dash_for_falsy_number() -> None:
     from states.finance_review_state import _bucket_rows
 
     # DRAFT allows request_number=None; test the fallback for falsy numbers
-    models = (
-        make_vendor_request(state=LifecycleState.DRAFT, number=None),
-    )
+    models = (make_vendor_request(state=LifecycleState.DRAFT, number=None),)
     # DRAFT won't match BUDGET_REVIEW, but we verify the or-fallback path
     # is exercised: when a request has no number, _bucket_rows uses "—"
     assert _bucket_rows(models, LifecycleState.BUDGET_REVIEW) == []
@@ -1064,13 +1060,15 @@ def test_remove_upload_unknown_key_noop() -> None:
 # --------------------------------------------------------------------------- #
 
 
-def test_validate_details_returns_true_when_no_field_issues() -> None:
+def test_validate_details_returns_bool_and_sets_errors() -> None:
     from states.request_create import RequestCreateState
 
     state = RequestCreateState()
-    # Empty command with no uploads — validate based on DraftCommand defaults
+    # Empty command has field issues (no family, no title, etc.)
     result = state._validate_details()
-    assert result is True
+    assert result is False  # field issues exist
+    assert state.field_errors  # errors were populated
+    assert state.blocking  # blocking list populated
 
 
 # --------------------------------------------------------------------------- #
